@@ -45,6 +45,9 @@ router.post('/send-verification', async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: '이메일을 입력해주세요.' });
 
+  const banned = db.prepare('SELECT 1 FROM banned_emails WHERE email=?').get(email);
+  if (banned) return res.status(400).json({ error: '가입이 제한된 이메일입니다.' });
+
   const existing = db.prepare('SELECT id FROM users WHERE email=?').get(email);
   if (existing) return res.status(400).json({ error: '이미 사용 중인 이메일입니다.' });
 
@@ -80,6 +83,10 @@ router.post('/register', (req, res) => {
   if (!email || !password || !nickname) {
     return res.status(400).json({ error: '필수 항목을 입력해주세요.' });
   }
+
+  // 영구 밴 확인
+  const banned = db.prepare('SELECT 1 FROM banned_emails WHERE email=?').get(email);
+  if (banned) return res.status(400).json({ error: '가입이 제한된 이메일입니다.' });
 
   // 이메일 인증 확인
   const record = verifyCodes.get(email);
@@ -238,6 +245,49 @@ router.delete('/account', (req, res) => {
   `).run(reason || null, id);
 
   req.session.destroy();
+  res.json({ ok: true });
+});
+
+// 회원 강제 탈퇴 + 영구 밴 (관리자 전용)
+router.post('/admin/ban/:userId', (req, res) => {
+  if (req.session.user?.role !== 'admin') return res.status(403).json({ error: '관리자만 가능합니다.' });
+
+  const { reason } = req.body;
+  const target = db.prepare('SELECT * FROM users WHERE id=? AND deleted_at IS NULL AND banned_at IS NULL').get(req.params.userId);
+  if (!target) return res.status(404).json({ error: '대상 회원을 찾을 수 없습니다.' });
+  if (target.role === 'admin') return res.status(403).json({ error: '관리자 계정은 제재할 수 없습니다.' });
+
+  // 원본 이메일 밴 목록에 등록
+  db.prepare('INSERT OR IGNORE INTO banned_emails(email, reason) VALUES(?,?)').run(target.email, reason || '운영 정책 위반');
+
+  // 계정 비활성화
+  db.prepare(`
+    UPDATE users SET
+      banned_at     = datetime('now','localtime'),
+      deleted_at    = datetime('now','localtime'),
+      withdrawal_reason = ?,
+      nickname      = '제재된 회원',
+      email         = '밴_' || id || '@banned.local',
+      password_hash = NULL,
+      oauth_provider = NULL,
+      oauth_id       = NULL
+    WHERE id = ?
+  `).run(reason || '운영 정책 위반', target.id);
+
+  res.json({ ok: true });
+});
+
+// 밴 목록 조회 (관리자 전용)
+router.get('/admin/banned', (req, res) => {
+  if (req.session.user?.role !== 'admin') return res.status(403).json({ error: '관리자만 가능합니다.' });
+  const rows = db.prepare('SELECT * FROM banned_emails ORDER BY banned_at DESC').all();
+  res.json({ rows });
+});
+
+// 밴 해제 (관리자 전용)
+router.delete('/admin/banned/:email', (req, res) => {
+  if (req.session.user?.role !== 'admin') return res.status(403).json({ error: '관리자만 가능합니다.' });
+  db.prepare('DELETE FROM banned_emails WHERE email=?').run(decodeURIComponent(req.params.email));
   res.json({ ok: true });
 });
 

@@ -20,5 +20,11 @@ try { db.exec('ALTER TABLE notices ADD COLUMN image_path TEXT DEFAULT ""'); } ca
 try { db.exec('ALTER TABLE posts ADD COLUMN pinned INTEGER DEFAULT 0'); } catch(e) {}
 try { db.exec('ALTER TABLE users ADD COLUMN oauth_provider TEXT DEFAULT NULL'); } catch(e) {}
 try { db.exec('ALTER TABLE users ADD COLUMN oauth_id TEXT DEFAULT NULL'); } catch(e) {}
+try { db.exec('ALTER TABLE users ADD COLUMN banned_at TEXT DEFAULT NULL'); } catch(e) {}
+try { db.exec(`CREATE TABLE IF NOT EXISTS banned_emails (
+  email TEXT PRIMARY KEY,
+  reason TEXT DEFAULT '',
+  banned_at TEXT DEFAULT (datetime('now','localtime'))
+)`); } catch(e) {}
 
 module.exports = db;

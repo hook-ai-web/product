@@ -134,6 +134,7 @@ async function loadPost() {
 
   const { loggedIn, user } = await api('/api/auth/me');
   const canEdit = loggedIn && (user.id === post.user_id || user.role === 'admin');
+  const canBan  = loggedIn && user.role === 'admin' && !post.is_anonymous && post.user_id !== user.id;
   const isMag = MAG_SECTIONS.includes(post.section);
   const isNotice = post.section === 'notice';
   const backHref = isNotice ? '/notices.html' : `/board.html?section=${post.section}&board=all`;
@@ -182,6 +183,7 @@ async function loadPost() {
         ${canEdit ? `<span style="float:right">
           <a href="/write.html?id=${post.id}" class="btn btn-outline btn-sm">수정</a>
           <button class="btn btn-danger btn-sm" onclick="deletePost()">삭제</button>
+          ${canBan ? `<button class="btn btn-sm" style="background:#fff0f0;color:#b71c1c;border:1px solid #ffcdd2;margin-left:.25rem" onclick="banUser(${post.user_id},'${post.author.replace(/'/g,'')}')">회원 제재</button>` : ''}
         </span>` : ''}
       </div>
       <div class="post-body">${post.content.replace(/\n/g,'<br>')}</div>
@@ -314,6 +316,24 @@ async function deletePost() {
   await api(`/api/posts/${postId}`, { method:'DELETE' });
   showToast('삭제됐습니다.');
   setTimeout(() => location.href = isNotice ? '/notices.html' : `/board.html?section=${post.section}&board=all`, 1000);
+}
+
+// ── 회원 제재 (관리자) ──────────────────────────────────────
+async function banUser(userId, nickname) {
+  const reason = prompt(`'${nickname}' 회원을 제재하는 이유를 입력하세요.\n\n⚠️ 제재 시 즉시 강제 탈퇴되며 동일 이메일로 재가입이 영구 불가합니다.`);
+  if (reason === null) return;
+  if (!confirm(`'${nickname}' 회원을 제재하시겠습니까?\n이유: ${reason || '(미입력)'}`)) return;
+  try {
+    await api(`/api/auth/admin/ban/${userId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason }),
+    });
+    showToast('회원이 제재됐습니다.');
+    setTimeout(() => location.reload(), 1500);
+  } catch(e) {
+    showToast('제재 처리 중 오류가 발생했습니다.');
+  }
 }
 
 // ── 댓글 ────────────────────────────────────────────────────

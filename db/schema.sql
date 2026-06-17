@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
   withdrawal_reason TEXT DEFAULT NULL,
   created_at TEXT DEFAULT (datetime('now','localtime')),
   oauth_provider TEXT DEFAULT NULL,
-  oauth_id TEXT DEFAULT NULL
+  oauth_id TEXT DEFAULT NULL,
+  banned_at TEXT DEFAULT NULL
 );
 
 -- 게시글 (생활정보·일자리·지원혜택·커뮤니티 통합)
@@ -148,4 +149,11 @@ CREATE TABLE IF NOT EXISTS meetups (
   member_count INTEGER DEFAULT 0,
   is_recruiting INTEGER DEFAULT 1,
   created_at TEXT DEFAULT (datetime('now','localtime'))
+);
+
+-- 영구 밴 이메일 목록
+CREATE TABLE IF NOT EXISTS banned_emails (
+  email TEXT PRIMARY KEY,
+  reason TEXT DEFAULT '',
+  banned_at TEXT DEFAULT (datetime('now','localtime'))
 );

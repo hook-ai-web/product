@@ -92,6 +92,7 @@ function buildFooter() {
           <a href="/terms.html">이용약관</a>
           <a href="/privacy.html">개인정보처리방침</a>
           <a href="/notices.html">공지사항</a>
+          <a href="#">모시다</a>
         </div>
 
         <!-- 사업자 정보 (사업자 등록 후 수정) -->

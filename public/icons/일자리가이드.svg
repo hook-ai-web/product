@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 계단 -->
+  <rect x="14" y="88" width="28" height="18" rx="4" fill="#378ADD"/>
+  <rect x="42" y="68" width="28" height="38" rx="4" fill="#378ADD"/>
+  <rect x="70" y="48" width="28" height="58" rx="4" fill="#378ADD"/>
+  <!-- 계단 밝은 면 -->
+  <rect x="14" y="88" width="28" height="6" rx="2" fill="#85B7EB"/>
+  <rect x="42" y="68" width="28" height="6" rx="2" fill="#85B7EB"/>
+  <rect x="70" y="48" width="28" height="6" rx="2" fill="#85B7EB"/>
+  <!-- 사람 -->
+  <circle cx="94" cy="30" r="10" fill="#FFB938"/>
+  <path fill="#FFB938" d="M80 46 Q94 40 108 46 L106 58 H82z"/>
+  <!-- 위쪽 화살표 -->
+  <path fill="#E24B4A" d="M108 44l-8-16-8 16h5V58h6V44z"/>
+</svg>

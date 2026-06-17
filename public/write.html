@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>글쓰기 — 2막이음</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="icon" type="image/svg+xml" href="/icons/2mak_ieum_favicon.svg">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .image-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: var(--sp-3);
+      margin-top: var(--sp-3);
+    }
+    .image-preview-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+    .image-preview-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .image-preview-item button {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .upload-zone {
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--sp-6);
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .upload-zone:hover { border-color: var(--color-primary); background: var(--color-primary-light); }
+    .upload-zone i { font-size: 28px; color: var(--color-text-muted); display: block; margin-bottom: var(--sp-2); }
+    .upload-zone p { font-size: var(--text-sm); color: var(--color-text-muted); margin: 0; }
+  </style>
+</head>
+<body>
+<main class="container" style="padding-bottom:4rem">
+<div style="max-width:760px;margin:0 auto">
+  <h2 id="form-title" style="margin-bottom:1.2rem">✏️ 글쓰기</h2>
+
+  <form id="write-form" enctype="multipart/form-data">
+    <input type="hidden" id="post-id">
+    <input type="hidden" id="f-section">
+    <input type="hidden" id="f-board">
+
+    <!-- 게시판 표시 (수정 모드 / 커뮤니티 고정 게시판) -->
+    <div class="form-group" id="board-display-wrap" style="display:none">
+      <label>게시판</label>
+      <div id="board-display" style="padding:.5rem 0;font-weight:600;color:var(--color-primary)"></div>
+    </div>
+
+    <!-- 게시판 선택 (생활정보·일자리·지원혜택 admin 글쓰기) -->
+    <div class="form-group" id="board-select-wrap" style="display:none">
+      <label for="f-board-select">게시판 선택</label>
+      <select id="f-board-select"></select>
+    </div>
+
+    <!-- 중고거래·지역별 공용 필드 -->
+    <div id="market-fields" style="display:none">
+      <div id="trade-group" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="form-group">
+          <label for="f-trade">거래 유형</label>
+          <select id="f-trade">
+            <option>팝니다</option><option>삽니다</option>
+            <option>나눔합니다</option><option>교환합니다</option>
+          </select>
+        </div>
+      </div>
+      <!-- 지역 2단계 선택 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="form-group">
+          <label for="f-region-1">시·도</label>
+          <select id="f-region-1">
+            <option value="">선택</option>
+            <option>서울</option><option>부산</option><option>대구</option>
+            <option>인천</option><option>광주</option><option>대전</option>
+            <option>울산</option><option>세종</option><option>경기</option>
+            <option>강원</option><option>충북</option><option>충남</option>
+            <option>전북</option><option>전남</option><option>경북</option>
+            <option>경남</option><option>제주</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="f-region-2">구·시·군</label>
+          <select id="f-region-2" disabled>
+            <option value="">시·도를 먼저 선택하세요</option>
+          </select>
+        </div>
+      </div>
+      <input type="hidden" id="f-region-m">
+    </div>
+
+    <div class="form-group">
+      <label for="f-title">제목</label>
+      <input type="text" id="f-title" placeholder="제목을 입력하세요" required>
+    </div>
+
+    <div class="form-group">
+      <label for="f-content">내용</label>
+      <textarea id="f-content" rows="12" style="width:100%;padding:.75rem;border:1.5px solid var(--color-border);border-radius:8px;font-size:1rem;font-family:inherit;resize:vertical" placeholder="내용을 입력하세요" required></textarea>
+    </div>
+
+    <!-- 이미지 업로드 -->
+    <div id="image-field" class="form-group" style="display:none">
+      <label>이미지 첨부 <span id="image-count-label" style="color:var(--color-text-muted);font-weight:400;font-size:var(--text-xs)"></span></label>
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('f-images').click()">
+        <i class="ti ti-photo-plus"></i>
+        <p>클릭하거나 이미지를 드래그하세요</p>
+        <p style="margin-top:4px;font-size:var(--text-xs)">JPG, PNG, GIF · 장당 최대 10MB</p>
+      </div>
+      <input type="file" id="f-images" name="images" multiple accept="image/*" style="display:none">
+      <div class="image-preview-grid" id="image-preview"></div>
+    </div>
+
+    <!-- 익명 옵션 (커뮤니티) -->
+    <div id="anon-field" style="display:none;margin-bottom:var(--sp-4)">
+      <label style="display:inline-flex;align-items:center;gap:.4rem;font-size:var(--text-sm);cursor:pointer;font-weight:500">
+        <input type="checkbox" id="f-anon"> 익명으로 게시하기
+      </label>
+    </div>
+
+    <div style="display:flex;gap:.8rem;margin-top:1.5rem">
+      <button type="submit" class="btn btn-primary">등록하기</button>
+      <button type="button" class="btn btn-outline" onclick="history.back()">취소</button>
+    </div>
+  </form>
+</div>
+</main>
+
+<script src="/js/common.js"></script>
+<script>
+const qs      = new URLSearchParams(location.search);
+const editId  = qs.get('id');
+const section = qs.get('section') || 'community';
+const board   = qs.get('board')   || 'daily';
+
+const BOARD_LABELS = {
+  health:'건강', finance:'재무·연금', travel:'여행·여가', housing:'주거생활',
+  family:'가족관계', digital:'디지털생활', law:'법률·소비자',
+  startup:'창업', recruit:'채용정보', guide:'일자리 가이드',
+  gov:'정부지원금', welfare:'복지혜택', care:'부모님요양',
+  counsel:'고민상담소', market:'따뜻한 장터', local:'우리 동네 소식',
+  talent:'생활의 지혜', daily:'일상 공유', second:'인생2막준비',
+  ch_walk:'발도장 챌린지', ch_morning:'아침 한잔 챌린지', ch_health:'건강 약속 챌린지',
+  challenge:'건강 챌린지', all:'전체',
+};
+const SECTION_LABELS = { life:'생활정보', job:'일자리', benefit:'지원혜택', community:'커뮤니티' };
+
+const SECTION_BOARDS = {
+  life:    [['health','건강'],['finance','재무·연금'],['travel','여행·여가'],
+            ['housing','주거생활'],['family','가족관계'],['digital','디지털생활'],['law','법률·소비자']],
+  job:     [['startup','창업'],['recruit','채용정보'],['guide','일자리 가이드']],
+  benefit: [['gov','정부지원금'],['welfare','복지혜택'],['care','부모님요양']],
+};
+
+// ── 지역 데이터 ──────────────────────────────────────────────
+const REGIONS = {
+  '서울': ['강남구','강동구','강북구','강서구','관악구','광진구','구로구','금천구','노원구','도봉구','동대문구','동작구','마포구','서대문구','서초구','성동구','성북구','송파구','양천구','영등포구','용산구','은평구','종로구','중구','중랑구'],
+  '부산': ['강서구','금정구','기장군','남구','동구','동래구','부산진구','북구','사상구','사하구','서구','수영구','연제구','영도구','중구','해운대구'],
+  '대구': ['군위군','남구','달서구','달성군','동구','북구','서구','수성구','중구'],
+  '인천': ['강화군','계양구','남동구','동구','미추홀구','부평구','서구','연수구','옹진군','중구'],
+  '광주': ['광산구','남구','동구','북구','서구'],
+  '대전': ['대덕구','동구','서구','유성구','중구'],
+  '울산': ['남구','동구','북구','울주군','중구'],
+  '세종': ['세종시'],
+  '경기': ['가평군','고양시','과천시','광명시','광주시','구리시','군포시','김포시','남양주시','동두천시','부천시','성남시','수원시','시흥시','안산시','안성시','안양시','양주시','양평군','여주시','연천군','오산시','용인시','의왕시','의정부시','이천시','파주시','평택시','포천시','하남시','화성시'],
+  '강원': ['강릉시','고성군','동해시','삼척시','속초시','양구군','양양군','영월군','원주시','인제군','정선군','철원군','춘천시','태백시','평창군','홍천군','화천군','횡성군'],
+  '충북': ['괴산군','단양군','보은군','영동군','옥천군','음성군','제천시','증평군','진천군','청주시','충주시'],
+  '충남': ['계룡시','공주시','금산군','논산시','당진시','보령시','부여군','서산시','서천군','아산시','예산군','천안시','청양군','태안군','홍성군'],
+  '전북': ['고창군','군산시','김제시','남원시','무주군','부안군','순창군','완주군','익산시','임실군','장수군','전주시','정읍시','진안군'],
+  '전남': ['강진군','고흥군','곡성군','광양시','구례군','나주시','담양군','목포시','무안군','보성군','순천시','신안군','여수시','영광군','영암군','완도군','장성군','장흥군','진도군','함평군','해남군','화순군'],
+  '경북': ['경산시','경주시','고령군','구미시','김천시','문경시','봉화군','상주시','성주군','안동시','영덕군','영양군','영주시','영천시','예천군','울릉군','울진군','의성군','청도군','청송군','칠곡군','포항시'],
+  '경남': ['거제시','거창군','고성군','김해시','남해군','밀양시','사천시','산청군','양산시','의령군','진주시','창녕군','창원시','통영시','하동군','함안군','함양군','합천군'],
+  '제주': ['서귀포시','제주시'],
+};
+
+// 지역 2단계 연동
+document.getElementById('f-region-1').addEventListener('change', function() {
+  const sel2 = document.getElementById('f-region-2');
+  const subs = REGIONS[this.value] || [];
+  if (!subs.length) {
+    sel2.innerHTML = '<option value="">시·도를 먼저 선택하세요</option>';
+    sel2.disabled = true;
+  } else {
+    sel2.innerHTML = '<option value="">구·시·군 선택</option>' +
+      subs.map(s => `<option>${s}</option>`).join('');
+    sel2.disabled = false;
+  }
+  updateRegionHidden();
+});
+document.getElementById('f-region-2').addEventListener('change', updateRegionHidden);
+function updateRegionHidden() {
+  const r1 = document.getElementById('f-region-1').value;
+  const r2 = document.getElementById('f-region-2').value;
+  document.getElementById('f-region-m').value = r2 ? `${r1} ${r2}` : r1;
+}
+
+// ── 이미지 미리보기 ───────────────────────────────────────────
+const MAX_IMAGES = 10;
+let selectedFiles = [];
+
+document.getElementById('f-images').addEventListener('change', function() {
+  const newFiles = Array.from(this.files);
+  const available = MAX_IMAGES - selectedFiles.length;
+  if (available <= 0) { showToast(`이미지는 최대 ${MAX_IMAGES}장까지 첨부할 수 있습니다.`); return; }
+  selectedFiles = selectedFiles.concat(newFiles.slice(0, available));
+  if (newFiles.length > available) showToast(`최대 ${MAX_IMAGES}장까지 가능해 ${available}장만 추가됐습니다.`);
+  this.value = '';
+  renderPreviews();
+});
+
+const uploadZone = document.getElementById('upload-zone');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.style.borderColor = 'var(--color-primary)'; });
+uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = ''; });
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.style.borderColor = '';
+  const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  const available = MAX_IMAGES - selectedFiles.length;
+  selectedFiles = selectedFiles.concat(dropped.slice(0, available));
+  renderPreviews();
+});
+
+function renderPreviews() {
+  const grid = document.getElementById('image-preview');
+  document.getElementById('image-count-label').textContent = `(${selectedFiles.length}/${MAX_IMAGES}장)`;
+  grid.innerHTML = selectedFiles.map((f, i) => `
+    <div class="image-preview-item">
+      <img src="${URL.createObjectURL(f)}" alt="">
+      <button type="button" onclick="removeImage(${i})"><i class="ti ti-x" style="font-size:11px"></i></button>
+    </div>
+  `).join('');
+}
+
+function removeImage(idx) {
+  selectedFiles.splice(idx, 1);
+  renderPreviews();
+}
+
+// ── 초기화 ───────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  const { loggedIn, user } = await api('/api/auth/me');
+  if (!loggedIn) { showToast('로그인이 필요합니다.'); setTimeout(() => location.href='/login.html', 1000); return; }
+
+  document.getElementById('f-section').value = section;
+  document.getElementById('f-board').value   = board;
+
+  const isAdminSection = ['life','job','benefit'].includes(section);
+  const isAdmin = user.role === 'admin';
+
+  if (editId) {
+    // ── 수정 모드 ──
+    document.getElementById('form-title').textContent = '✏️ 글 수정';
+    document.getElementById('board-display-wrap').style.display = 'block';
+    document.getElementById('board-display').textContent =
+      `${SECTION_LABELS[section]||''} > ${BOARD_LABELS[board]||board}`;
+    const { post } = await api(`/api/posts/${editId}`);
+    document.getElementById('post-id').value   = editId;
+    document.getElementById('f-title').value   = post.title;
+    document.getElementById('f-content').value = post.content;
+    if (post.trade_type) document.getElementById('f-trade').value = post.trade_type;
+    if (post.price)      document.getElementById('f-price').value = post.price;
+
+  } else if (isAdminSection && isAdmin) {
+    // ── 관리자 글쓰기 (생활정보·일자리·지원혜택) ──
+    const boardSelectWrap = document.getElementById('board-select-wrap');
+    boardSelectWrap.style.display = 'block';
+    const sel = document.getElementById('f-board-select');
+    const boards = SECTION_BOARDS[section] || [];
+    sel.innerHTML = boards.map(([val, lbl]) => `<option value="${val}">${lbl}</option>`).join('');
+    // URL에 board가 명시된 경우 초기 선택
+    if (board && board !== 'all') sel.value = board;
+    sel.addEventListener('change', () => {
+      document.getElementById('f-board').value = sel.value;
+    });
+    document.getElementById('f-board').value = sel.value;
+
+    // 이미지 항상 표시
+    document.getElementById('image-field').style.display = 'block';
+    document.getElementById('image-count-label').textContent = `(0/${MAX_IMAGES}장)`;
+
+  } else {
+    // ── 커뮤니티 글쓰기 ──
+    document.getElementById('board-display-wrap').style.display = 'block';
+    document.getElementById('board-display').textContent =
+      `${SECTION_LABELS[section]||''} > ${BOARD_LABELS[board]||board}`;
+
+    if (['counsel','daily','local'].includes(board)) {
+      document.getElementById('anon-field').style.display = 'block';
+    }
+    if (board === 'market') {
+      document.getElementById('market-fields').style.display = 'block';
+      document.getElementById('image-field').style.display = 'block';
+      document.getElementById('image-count-label').textContent = `(0/${MAX_IMAGES}장)`;
+    }
+    if (board === 'local') {
+      document.getElementById('market-fields').style.display = 'block';
+      document.getElementById('trade-group').style.display = 'none';
+    }
+    if (['daily','talent'].includes(board)) {
+      document.getElementById('image-field').style.display = 'block';
+      document.getElementById('image-count-label').textContent = `(0/${MAX_IMAGES}장)`;
+    }
+  }
+});
+
+// ── 제출 ─────────────────────────────────────────────────────
+document.getElementById('write-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const id      = document.getElementById('post-id').value;
+  const title   = document.getElementById('f-title').value.trim();
+  const content = document.getElementById('f-content').value.trim();
+  if (!title || !content) return showToast('제목과 내용을 입력해주세요.');
+
+  try {
+    if (id) {
+      await api(`/api/posts/${id}`, {
+        method: 'PUT',
+        body: {
+          title, content,
+          region:     document.getElementById('f-region-m')?.value || '',
+          trade_type: document.getElementById('f-trade')?.value    || '',
+          price:      document.getElementById('f-price')?.value    || 0,
+        },
+      });
+      showToast('수정됐습니다.');
+      setTimeout(() => location.href = `/post.html?id=${id}`, 900);
+    } else {
+      const boardSelectWrapEl = document.getElementById('board-select-wrap');
+      const resolvedBoard = boardSelectWrapEl.style.display !== 'none'
+        ? document.getElementById('f-board-select').value
+        : board;
+
+      const fd = new FormData();
+      fd.append('section',      section);
+      fd.append('board',        resolvedBoard);
+      fd.append('title',        title);
+      fd.append('content',      content);
+      fd.append('is_anonymous', document.getElementById('f-anon')?.checked ? '1' : '0');
+      fd.append('region',       document.getElementById('f-region-m')?.value || '');
+      fd.append('trade_type',   resolvedBoard === 'market' ? (document.getElementById('f-trade')?.value || '') : '');
+      for (const f of selectedFiles) fd.append('images', f);
+
+      const res = await fetch('/api/posts', { method:'POST', body: fd });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error);
+
+      showToast('등록됐습니다.');
+      setTimeout(() => location.href = `/post.html?id=${result.id}`, 900);
+    }
+  } catch(err) {
+    showToast(err.message || '오류가 발생했습니다.');
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>건강 챌린지 — 2막이음</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="icon" type="image/svg+xml" href="/icons/2mak_ieum_favicon.svg">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .cb-wrap { max-width: 720px; margin: 0 auto; padding: 1.5rem var(--sp-5) 4rem; }
+
+    /* 상단 헤더 */
+    .cb-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .cb-header h2 { margin: 0; font-size: 1.3rem; }
+    .cb-header a { font-size: .85rem; color: var(--color-text-muted); text-decoration: none; }
+    .cb-header a:hover { color: var(--color-primary); }
+    .cb-subtitle { font-size: .85rem; color: var(--color-text-muted); margin-top: .2rem; }
+
+    /* 날짜 + 참여 현황 바 */
+    .cb-date-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--color-bg); border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl); padding: .75rem 1.25rem;
+      margin-bottom: 1.1rem;
+    }
+    .cb-date-label {
+      font-size: .97rem; font-weight: 700; color: var(--color-text-primary);
+    }
+    .cb-member-count { font-size: .88rem; color: var(--color-text-muted); }
+    .cb-member-count strong { color: var(--color-primary); font-weight: 700; }
+
+    /* 도전 폼 */
+    .checkin-card {
+      background: var(--color-bg); border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 1.25rem;
+    }
+    .checkin-header {
+      padding: .75rem 1.25rem; background: var(--color-bg-subtle);
+      border-bottom: 1px solid var(--color-border);
+      font-weight: 700; font-size: .95rem;
+    }
+    .checkin-body { padding: 1rem 1.25rem; }
+    .cb-textarea {
+      width: 100%; min-height: 90px; padding: .65rem .85rem;
+      border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+      font-size: .93rem; font-family: inherit; resize: vertical;
+      box-sizing: border-box; transition: border-color .12s; line-height: 1.55;
+    }
+    .cb-textarea:focus { outline: none; border-color: var(--color-primary); }
+    .cb-img-row { display: flex; align-items: center; gap: .75rem; margin-top: .65rem; flex-wrap: wrap; }
+    .cb-img-label {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .38rem .85rem; border: 1.5px dashed var(--color-border);
+      border-radius: var(--radius-sm); font-size: .83rem; cursor: pointer;
+      color: var(--color-text-muted); transition: border-color .12s, color .12s;
+    }
+    .cb-img-label:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .cb-preview { display: flex; gap: .4rem; flex-wrap: wrap; }
+    .cb-preview img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid var(--color-border); }
+    .cb-submit-row { display: flex; align-items: center; justify-content: space-between; margin-top: .9rem; }
+    .cb-err { font-size: .83rem; color: var(--danger); }
+    .btn-challenge {
+      background: var(--color-primary); color: #fff;
+      border: none; border-radius: var(--radius-md);
+      padding: .55rem 1.5rem; font-size: .95rem; font-weight: 700;
+      cursor: pointer; transition: opacity .15s;
+    }
+    .btn-challenge:hover { opacity: .88; }
+    .already-posted {
+      padding: .9rem; font-size: .92rem; color: #065f46;
+      background: #d1fae5; border-radius: var(--radius-sm);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .login-prompt {
+      padding: .9rem; font-size: .92rem;
+      color: var(--color-text-muted); text-align: center;
+    }
+    .login-prompt a { color: var(--color-primary); font-weight: 600; }
+
+    /* 게시글 목록 */
+    .posts-section-label {
+      font-size: .85rem; font-weight: 700; color: var(--color-text-muted);
+      margin-bottom: .75rem; padding-bottom: .4rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .ch-post-item {
+      display: flex; align-items: flex-start; gap: .85rem;
+      padding: .9rem 0; border-bottom: 1px solid #f0f0f0;
+    }
+    .ch-post-item:last-child { border-bottom: none; }
+    .ch-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem; flex-shrink: 0; color: #fff;
+    }
+    .ch-post-main { flex: 1; min-width: 0; }
+    .ch-post-top {
+      display: flex; align-items: center; gap: .4rem; margin-bottom: .3rem; flex-wrap: wrap;
+    }
+    .ch-nickname { font-size: .9rem; font-weight: 600; }
+    .ch-rank {
+      font-size: .72rem; font-weight: 700; padding: .12rem .4rem;
+      border-radius: 4px; white-space: nowrap;
+    }
+    .rank-1 { background: #fef9c3; color: #854d0e; }
+    .rank-2 { background: #f1f5f9; color: #475569; }
+    .rank-3 { background: #fff7ed; color: #9a3412; }
+    .rank-other { background: #f8f8f8; color: #9ca3af; }
+    .ach-badge {
+      font-size: .72rem; font-weight: 700; padding: .1rem .35rem;
+      border-radius: 4px; white-space: nowrap;
+    }
+    .ach-gold   { background: #fef08a; color: #78350f; }
+    .ach-silver { background: #e2e8f0; color: #475569; }
+    .ach-icon   { font-size: .85rem; }
+    .ch-post-content { font-size: .92rem; line-height: 1.6; color: var(--color-text-primary); word-break: break-word; }
+    .ch-post-imgs { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .55rem; }
+    .ch-post-imgs img {
+      width: 100px; height: 100px; object-fit: cover;
+      border-radius: 8px; cursor: pointer; border: 1px solid var(--color-border);
+      transition: opacity .12s;
+    }
+    .ch-post-imgs img:hover { opacity: .88; }
+    .ch-post-time { font-size: .77rem; color: var(--color-text-muted); margin-top: .35rem; }
+    .ch-post-right {
+      display: flex; flex-direction: column; align-items: center;
+      flex-shrink: 0; padding-top: .1rem;
+    }
+    .cheer-btn {
+      display: flex; flex-direction: column; align-items: center; gap: .15rem;
+      background: none; border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm); padding: .45rem .65rem;
+      cursor: pointer; color: var(--color-text-muted);
+      transition: border-color .12s, color .12s, background .12s;
+      min-width: 46px;
+    }
+    .cheer-btn:hover { border-color: #f97316; color: #f97316; background: #fff7ed; }
+    .cheer-btn.cheered { border-color: #f97316; color: #f97316; background: #fff7ed; }
+    .cheer-icon { font-size: 1.15rem; }
+    .cheer-cnt { font-size: .72rem; font-weight: 700; }
+
+    /* 이미지 확대 모달 */
+    .img-modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,.82);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999; cursor: pointer; padding: 1rem;
+    }
+    .img-modal-bg img { max-width: 100%; max-height: 90vh; border-radius: 10px; }
+  </style>
+</head>
+<body>
+<div id="header-wrap"></div>
+
+<div class="cb-wrap">
+  <div class="cb-header">
+    <div>
+      <h2 id="cb-title">건강 챌린지</h2>
+      <div class="cb-subtitle" id="cb-subtitle"></div>
+    </div>
+    <a href="/community.html">← 커뮤니티</a>
+  </div>
+
+  <!-- 날짜 + 참여 현황 -->
+  <div class="cb-date-bar">
+    <span class="cb-date-label" id="cb-today-label"></span>
+    <span class="cb-member-count">오늘 참여 <strong id="today-count">0</strong>명</span>
+  </div>
+
+  <!-- 도전 폼 -->
+  <div class="checkin-card" id="checkin-card">
+    <div class="checkin-header" id="checkin-header">오늘의 도전 기록하기</div>
+    <div class="checkin-body" id="checkin-body">
+      <div style="color:var(--color-text-muted);text-align:center;padding:.5rem">불러오는 중...</div>
+    </div>
+  </div>
+
+  <!-- 게시글 목록 -->
+  <div class="posts-section-label">오늘의 도전 기록</div>
+  <div id="posts-list">
+    <div style="color:var(--color-text-muted);font-size:.9rem">불러오는 중...</div>
+  </div>
+</div>
+
+<div class="img-modal-bg" id="img-modal" style="display:none" onclick="this.style.display='none'">
+  <img id="img-modal-src" src="" alt="">
+</div>
+
+<div id="footer-wrap"></div>
+<script src="/js/common.js"></script>
+<script>
+const BOARDS = {
+  ch_walk: {
+    title: '오늘도 활기차게 발도장',
+    emoji: '👟',
+    prefix: '[👟발도장] 오늘의 걷기/운동 인증',
+    sub: '산책길 풍경, 운동화, 만보기 사진을 올려보세요',
+    placeholder: '오늘도 상쾌하게 걸었습니다! 날씨가 좋아서 더 멀리 걸었어요 ☀️',
+  },
+  ch_morning: {
+    title: '내몸을 깨우는 아침 한잔',
+    emoji: '🥛',
+    prefix: '[🥛물한잔] 아침 물/건강음료 인증',
+    sub: '물컵, 건강 주스, 아침 음료 사진을 올려보세요',
+    placeholder: '아침에 일어나자마자 시원한 물 한 잔! 몸이 가뿐해지는 기분이에요 💧',
+  },
+  ch_health: {
+    title: '백세 건강 약속',
+    emoji: '💊',
+    prefix: '[💊꼭챙김] 영양제/건강루틴 인증',
+    sub: '오늘 먹은 영양제, 약통 사진을 올려서 서로 챙겨줘요',
+    placeholder: '오늘 영양제 꼭 챙겨 먹었어요 💊 우리 이웃들도 건강 챙기세요!',
+  },
+};
+
+const AVATAR_COLORS = ['#f97316','#8b5cf6','#0ea5e9','#10b981','#ef4444','#f59e0b','#6366f1','#14b8a6'];
+
+const params = new URLSearchParams(location.search);
+const BOARD  = params.get('board') || 'ch_walk';
+const META   = BOARDS[BOARD] || BOARDS.ch_walk;
+
+const now      = new Date();
+const todayStr = now.toISOString().slice(0, 10);
+let isLoggedIn = false;
+
+// ── 게시글 로드 ─────────────────────────────────────────────────
+async function loadPosts() {
+  try {
+    const data = await api(`/api/challenges/board-posts?board=${BOARD}&date=${todayStr}`);
+
+    document.getElementById('today-count').textContent = data.todayCount;
+
+    if (todayStr) renderCheckinForm(data.alreadyPosted);
+
+    renderPosts(data.posts, data.achievements, data.cheerCounts, data.myCheer, data.imageMaps || {});
+  } catch(e) {
+    document.getElementById('posts-list').innerHTML =
+      '<div style="color:var(--color-text-muted);font-size:.9rem">불러오기에 실패했습니다.</div>';
+  }
+}
+
+// ── 도전 폼 렌더 ───────────────────────────────────────────────
+function renderCheckinForm(alreadyPosted) {
+  const body = document.getElementById('checkin-body');
+  if (!isLoggedIn) {
+    body.innerHTML = `<div class="login-prompt"><a href="/login.html">로그인</a> 후 오늘의 챌린지를 기록해보세요 🌿</div>`;
+    return;
+  }
+  if (alreadyPosted) {
+    body.innerHTML = `<div class="already-posted">✅ 오늘 이미 도전하셨습니다! 내일도 함께해요 💪</div>`;
+    return;
+  }
+  body.innerHTML = `
+    <textarea class="cb-textarea" id="cb-content"
+      placeholder="${META.placeholder}" maxlength="300"></textarea>
+    <div class="cb-img-row">
+      <label class="cb-img-label">
+        <i class="ti ti-camera"></i> 사진 첨부
+        <input type="file" id="cb-image" accept="image/*" style="display:none" onchange="previewImg(this)">
+      </label>
+      <div class="cb-preview" id="cb-preview"></div>
+    </div>
+    <div class="cb-submit-row">
+      <span class="cb-err" id="cb-err"></span>
+      <button class="btn-challenge" onclick="submitCheckin()">도전하기</button>
+    </div>`;
+}
+
+function previewImg(input) {
+  const wrap = document.getElementById('cb-preview');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  if (input.files[0]) {
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(input.files[0]);
+    wrap.appendChild(img);
+  }
+}
+
+async function submitCheckin() {
+  const contentEl = document.getElementById('cb-content');
+  const errEl     = document.getElementById('cb-err');
+  const imageEl   = document.getElementById('cb-image');
+  const content   = contentEl?.value.trim();
+
+  if (errEl) errEl.textContent = '';
+  if (!content) { if (errEl) errEl.textContent = '한 줄 소감을 입력해주세요.'; return; }
+
+  const fd = new FormData();
+  fd.append('section', 'community');
+  fd.append('board',   BOARD);
+  fd.append('title',   META.prefix);
+  fd.append('content', content);
+  if (imageEl?.files[0]) fd.append('images', imageEl.files[0]);
+
+  try {
+    const res  = await fetch('/api/posts', { method:'POST', body: fd, credentials:'include' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || '오류가 발생했습니다.');
+
+    showToast('오늘의 챌린지를 기록했습니다! 🎉');
+    try {
+      const ach = await api('/api/challenges/check-achievement', { method:'POST', body: { board: BOARD } });
+      if (ach.newAchievement) {
+        const t = ach.totalAchievements;
+        if (t >= 3) showToast('🥇 건강3관왕 달성! 정말 대단해요!', 4000);
+        else if (t >= 2) showToast('🥈 건강2관왕 달성!', 4000);
+        else showToast(`${META.emoji} 30일 달성 배지를 획득했습니다!`, 4000);
+      }
+    } catch(_) {}
+    loadPosts();
+  } catch(err) {
+    if (errEl) errEl.textContent = err.message;
+  }
+}
+
+// ── 게시글 렌더 ────────────────────────────────────────────────
+function achievementBadge(boards) {
+  if (!boards || !boards.length) return '';
+  if (boards.length >= 3) return '<span class="ach-badge ach-gold">🥇 건강3관왕</span>';
+  if (boards.length >= 2) return '<span class="ach-badge ach-silver">🥈 건강2관왕</span>';
+  const icons = { ch_walk:'👟', ch_morning:'🥛', ch_health:'💊' };
+  return `<span class="ach-icon">${icons[boards[0]] || ''}</span>`;
+}
+
+function rankLabel(rank) {
+  const map = { 1:'rank-1 ★1등', 2:'rank-2 ★2등', 3:'rank-3 ★3등' };
+  const val = map[rank] || `rank-other ★${rank}등`;
+  const [cls, ...rest] = val.split(' ');
+  return `<span class="ch-rank ${cls}">${rest.join(' ')}</span>`;
+}
+
+function avatarColor(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) - h) + str.charCodeAt(i);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+
+function renderPosts(posts, achievements, cheerCounts, myCheer, imageMaps) {
+  const el = document.getElementById('posts-list');
+  if (!posts || !posts.length) {
+    el.innerHTML = '<div style="color:var(--color-text-muted);font-size:.9rem;padding:.5rem 0">아직 오늘의 도전 기록이 없습니다. 첫 번째로 기록해보세요!</div>';
+    return;
+  }
+
+  el.innerHTML = posts.map(p => {
+    const initial = (p.nickname || '?')[0];
+    const color   = avatarColor(p.nickname || 'user');
+    const ach     = achievementBadge(achievements[p.user_id]);
+    const imgs    = imageMaps[p.id] || [];
+    const imgHtml = imgs.length
+      ? `<div class="ch-post-imgs">${imgs.map(src => `<img src="${src}" onclick="openImg('${src}')" alt="">`).join('')}</div>`
+      : '';
+    const chCnt   = cheerCounts[p.id] || 0;
+    const cheered = myCheer && myCheer[p.id];
+
+    return `
+    <div class="ch-post-item" id="post-${p.id}">
+      <div class="ch-avatar" style="background:${color}">${initial}</div>
+      <div class="ch-post-main">
+        <div class="ch-post-top">
+          <span class="ch-nickname">${p.nickname}</span>
+          ${ach}
+          ${rankLabel(p.rank)}
+        </div>
+        <div class="ch-post-content">${p.content.replace(/\n/g,'<br>')}</div>
+        ${imgHtml}
+        <div class="ch-post-time">${timeAgo(p.created_at)}</div>
+      </div>
+      <div class="ch-post-right">
+        <button class="cheer-btn ${cheered ? 'cheered' : ''}" id="cheer-${p.id}" onclick="toggleCheer(${p.id})">
+          <span class="cheer-icon">👏</span>
+          <span class="cheer-cnt" id="cheer-cnt-${p.id}">${chCnt}</span>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function toggleCheer(postId) {
+  if (!isLoggedIn) { showToast('로그인 후 응원할 수 있습니다.'); return; }
+  try {
+    const { count, added } = await api(`/api/reactions/${postId}/cheer`, { method:'POST' });
+    const btn = document.getElementById(`cheer-${postId}`);
+    const cnt = document.getElementById(`cheer-cnt-${postId}`);
+    if (btn) btn.classList.toggle('cheered', added);
+    if (cnt) cnt.textContent = count;
+  } catch(e) { showToast(e.message); }
+}
+
+function openImg(src) {
+  document.getElementById('img-modal-src').src = src;
+  document.getElementById('img-modal').style.display = 'flex';
+}
+
+// ── 초기화 ───────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  document.title = `${META.title} — 2막이음`;
+  document.getElementById('cb-title').textContent = `${META.emoji} ${META.title}`;
+  document.getElementById('cb-subtitle').textContent = META.sub;
+
+  // 오늘 날짜 표시
+  const m = now.getMonth() + 1, d = now.getDate(), w = ['일','월','화','수','목','금','토'][now.getDay()];
+  document.getElementById('cb-today-label').textContent = `📅 ${now.getFullYear()}년 ${m}월 ${d}일 (${w})`;
+
+  try {
+    const { loggedIn } = await api('/api/auth/me');
+    isLoggedIn = loggedIn;
+  } catch(_) {}
+
+  loadPosts();
+});
+</script>
+</body>
+</html>

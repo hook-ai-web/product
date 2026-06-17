@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# AI 크롤러 허용 (ChatGPT, Claude, Bard 등)
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# 업로드 파일 크롤링 제외
+Disallow: /uploads/
+
+Sitemap: https://yourdomain.com/sitemap.xml

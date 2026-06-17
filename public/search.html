@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>검색 — 2막이음</title>
+  <!-- Fonts + Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="icon" type="image/svg+xml" href="/icons/2mak_ieum_favicon.svg">
+  <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+<main class="container">
+  <h2 style="margin-bottom:1rem" id="search-heading">검색 결과</h2>
+  <div id="result-list" class="post-list"></div>
+</main>
+
+<script src="/js/common.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const q = new URLSearchParams(location.search).get('q') || '';
+  if (!q) { document.getElementById('result-list').innerHTML = '<p style="padding:2rem;color:#888">검색어를 입력해주세요.</p>'; return; }
+  document.getElementById('search-heading').textContent = `"${q}" 검색 결과`;
+  document.title = `${q} 검색 — 2막이음`;
+  if (document.getElementById('search-q')) document.getElementById('search-q').value = q;
+
+  const rows = await api(`/api/search?q=${encodeURIComponent(q)}`);
+  const el = document.getElementById('result-list');
+  if (!rows.length) {
+    el.innerHTML = '<p style="padding:2rem;color:#888">검색 결과가 없습니다.</p>';
+    return;
+  }
+  el.innerHTML = rows.map(r => `
+    <div class="post-row">
+      <div class="title"><a href="/post.html?id=${r.id}">${r.title}</a></div>
+      <div class="meta">${r.author} · ${fmtDate(r.created_at).slice(0,10)}</div>
+      <div class="meta">👁 ${r.view_count}</div>
+    </div>`).join('');
+});
+</script>
+</body>
+</html>

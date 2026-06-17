@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="모시다 파비콘">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2F80ED"/><stop offset="100%" stop-color="#4FA66A"/></linearGradient></defs>
+  <path d="M32 58 C14 43 5 31 5 18 C5 7 19 1 30 11 C31 12 32 14 32 15 C33 14 34 12 35 11 C46 1 59 7 59 18 C59 31 50 43 32 58Z" fill="url(#g)"/>
+  <path d="M19 32 L32 21 L45 32 V49 H37 V38 H27 V49 H19Z" fill="white"/>
+</svg>

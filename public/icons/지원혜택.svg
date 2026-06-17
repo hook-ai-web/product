@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 상자 뚜껑 -->
+  <rect x="16" y="38" width="96" height="20" rx="6" fill="#1D9E75"/>
+  <!-- 상자 몸체 -->
+  <rect x="22" y="58" width="84" height="54" rx="6" fill="#5DCAA5"/>
+  <!-- 리본 세로 -->
+  <rect x="56" y="38" width="16" height="74" rx="0" fill="#FFB938"/>
+  <!-- 리본 가로 -->
+  <rect x="16" y="42" width="96" height="12" rx="0" fill="#FFB938"/>
+  <!-- 리본 매듭 -->
+  <circle cx="64" cy="48" r="10" fill="#EF9F27"/>
+  <!-- 리본 루프 왼쪽 -->
+  <path fill="#FFB938" d="M64 38 Q44 22 36 34 Q32 44 56 42z"/>
+  <!-- 리본 루프 오른쪽 -->
+  <path fill="#FFB938" d="M64 38 Q84 22 92 34 Q96 44 72 42z"/>
+</svg>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>게시글 — 2막이음</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="icon" type="image/svg+xml" href="/icons/2mak_ieum_favicon.svg">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    /* 함께보기 모달 */
+    #share-modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 9000;
+      align-items: center; justify-content: center;
+    }
+    #share-modal.open { display: flex; }
+    .share-panel {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      width: min(340px, 90vw);
+      box-shadow: 0 8px 32px rgba(0,0,0,.18);
+    }
+    .share-panel h4 {
+      margin: 0 0 1.2rem;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .share-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+      gap: .8rem;
+      margin-bottom: 1.2rem;
+    }
+    .share-btn {
+      display: flex; flex-direction: column; align-items: center; gap: .4rem;
+      padding: .75rem .25rem;
+      border: 1.5px solid var(--color-border);
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      font-size: .72rem;
+      font-weight: 500;
+      color: var(--color-text-primary);
+      transition: background .15s, border-color .15s;
+    }
+    .share-btn:hover { background: var(--color-primary-light); border-color: var(--color-primary); }
+    .share-btn i { font-size: 22px; }
+    .share-close {
+      width: 100%; padding: .6rem;
+      border: none; border-radius: 8px;
+      background: var(--color-bg-2);
+      cursor: pointer; font-size: .9rem;
+    }
+    .copy-toast {
+      font-size: .8rem; color: var(--color-primary);
+      text-align: center; height: 1.2rem; margin-bottom: .4rem;
+    }
+    .kakao-btn { background: #FEE500 !important; color: #3A1D1D !important; border-color: #FEE500 !important; }
+    .kakao-btn i { color: #3A1D1D; }
+    .band-btn  { background: #1DBD26 !important; color: #fff !important; border-color: #1DBD26 !important; }
+    .band-btn i { color: #fff; }
+    /* 인라인 공유 버튼 */
+    .inline-share-row {
+      display: flex; gap: .6rem; margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .ishare-btn {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .55rem 1rem; border-radius: 8px; border: none;
+      font-size: .88rem; font-weight: 600; cursor: pointer;
+      transition: opacity .15s;
+    }
+    .ishare-btn:hover { opacity: .85; }
+    .ishare-btn i { font-size: 17px; }
+    .ishare-btn.kakao { background: #FEE500; color: #3A1D1D; }
+    .ishare-btn.band  { background: #1DBD26; color: #fff; }
+    .ishare-btn.copy  { background: #f1f3f5; color: #333; border: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+<main class="container" style="padding-bottom:4rem">
+  <div id="post-wrap">
+    <p style="text-align:center;padding:3rem;color:#888">불러오는 중...</p>
+  </div>
+</main>
+
+<!-- 함께보기 모달 -->
+<div id="share-modal" onclick="if(event.target===this)closeShare()">
+  <div class="share-panel">
+    <h4><i class="ti ti-share"></i> 함께보기</h4>
+    <div class="share-grid">
+      <button class="share-btn kakao-btn" onclick="shareKakao()">
+        <i class="ti ti-brand-kakao"></i>카카오톡
+      </button>
+      <button class="share-btn band-btn" onclick="shareBand()">
+        <i class="ti ti-antenna-bars-5"></i>네이버밴드
+      </button>
+      <button class="share-btn" onclick="shareSms()">
+        <i class="ti ti-message" style="color:#4caf50"></i>문자
+      </button>
+      <button class="share-btn" onclick="shareMail()">
+        <i class="ti ti-mail" style="color:#ea4335"></i>이메일
+      </button>
+      <button class="share-btn" onclick="copyLink()">
+        <i class="ti ti-link" style="color:var(--color-primary)"></i>링크복사
+      </button>
+    </div>
+    <div class="copy-toast" id="copy-toast"></div>
+    <button class="share-close" onclick="closeShare()">닫기</button>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+const postId = new URLSearchParams(location.search).get('id');
+const MAG_SECTIONS = ['life','job','benefit'];
+const SHARE_SECTIONS = ['life','job','benefit','notice'];
+let _post = null;
+
+let _likeCount = 0;
+let _liked = false;
+
+async function loadPost() {
+  if (!postId) { location.href = '/'; return; }
+  const { post, images, comments } = await api(`/api/posts/${postId}`);
+  _post = post;
+  document.title = post.title + ' — 2막이음';
+
+  const { loggedIn, user } = await api('/api/auth/me');
+  const canEdit = loggedIn && (user.id === post.user_id || user.role === 'admin');
+  const isMag = MAG_SECTIONS.includes(post.section);
+  const isNotice = post.section === 'notice';
+  const backHref = isNotice ? '/notices.html' : `/board.html?section=${post.section}&board=all`;
+
+  let noticeBadge = '';
+  if (isNotice) {
+    const label = post.board === 'event' ? '이벤트' : '공지';
+    noticeBadge = `<span style="background:var(--color-primary);color:#fff;border-radius:4px;padding:.2rem .6rem;font-size:.9rem;margin-right:.5rem">${label}</span>`;
+  }
+
+  // 고민상담소 공감 수 조회
+  if (post.board === 'counsel') {
+    try {
+      const counts = await api(`/api/reactions/counts?post_ids=${postId}`);
+      _likeCount = counts[postId]?.like || 0;
+      _liked = counts[postId]?._mine?.like || false;
+    } catch(e) {}
+  }
+
+  let imgHtml = '';
+  if (images.length) {
+    if (isMag) {
+      imgHtml = buildCardNews(images);
+    } else {
+      imgHtml = `<div class="post-images">${images.map(i => `<img src="${i.file_path}" alt="첨부 이미지">`).join('')}</div>`;
+    }
+  }
+
+  const tradeBadge = post.trade_type
+    ? `<span style="background:var(--accent);color:#fff;border-radius:4px;padding:.2rem .6rem;font-size:.9rem;margin-right:.5rem">${post.trade_type}</span>` : '';
+
+  const postWrap = document.getElementById('post-wrap');
+  postWrap.innerHTML = `
+    <nav style="margin-bottom:1rem;font-size:.95rem">
+      <a href="${backHref}">← 목록으로</a>
+    </nav>
+
+    <div class="post-detail">
+      <h1>${post.title}</h1>
+      <div class="post-meta">
+        ${tradeBadge}${noticeBadge}
+        <span>${post.author}</span>
+        ${post.region ? ` · 📍 ${post.region}` : ''}
+        · ${fmtDate(post.created_at)}
+        · 👁 ${post.view_count}
+        ${canEdit ? `<span style="float:right">
+          <a href="/write.html?id=${post.id}" class="btn btn-outline btn-sm">수정</a>
+          <button class="btn btn-danger btn-sm" onclick="deletePost()">삭제</button>
+        </span>` : ''}
+      </div>
+      <div class="post-body">${post.content.replace(/\n/g,'<br>')}</div>
+      ${imgHtml}
+    </div>
+
+    <!-- 인라인 공유 버튼 (생활정보·일자리·지원혜택·공지·이벤트) -->
+    ${isMag || isNotice ? `
+    <div class="inline-share-row">
+      <button class="ishare-btn kakao" onclick="shareKakao()"><i class="ti ti-brand-kakao"></i>카카오톡</button>
+      <button class="ishare-btn band" onclick="shareBand()"><i class="ti ti-antenna-bars-5"></i>네이버밴드</button>
+      <button class="ishare-btn copy" onclick="copyLink()"><i class="ti ti-link"></i>링크복사</button>
+    </div>` : ''}
+
+    <!-- 공감 버튼 (고민상담소) -->
+    ${post.board === 'counsel' ? `
+    <div id="like-wrap" style="margin-top:1.5rem;display:flex;align-items:center;gap:.75rem">
+      <button id="like-btn" class="btn btn-outline" onclick="toggleLike()"
+        style="display:inline-flex;align-items:center;gap:.4rem;${_liked?'border-color:#e53935;color:#c62828;background:#fff5f5':''}">
+        ${_liked ? '❤️' : '🤍'} 공감 <span id="like-count">${_likeCount}</span>
+      </button>
+    </div>` : ''}
+
+    <!-- 댓글 (커뮤니티만 — 생활정보·일자리·지원혜택·공지 제외) -->
+    ${!isMag && !isNotice ? `
+    <div class="comment-section">
+      <h3>댓글 ${comments.length}개</h3>
+      <div id="comment-list">
+        ${comments.map(c => `
+          <div class="comment-item" id="c-${c.id}">
+            <span class="c-author">${c.author}</span>
+            <span class="c-date">${fmtDate(c.created_at)}</span>
+            ${loggedIn && (user.id === c.user_id || user.role==='admin')
+              ? `<button class="btn btn-sm" style="float:right;background:#eee;color:#c00" onclick="deleteComment(${c.id})">삭제</button>` : ''}
+            <div class="c-body">${c.content.replace(/\n/g,'<br>')}</div>
+          </div>`).join('') || '<p style="color:#888;font-size:.95rem">첫 댓글을 남겨보세요.</p>'}
+      </div>
+
+      ${loggedIn ? `
+        <div style="margin-top:1.2rem">
+          ${post.board === 'counsel' ? `<p style="font-size:var(--text-sm);color:var(--color-text-muted);margin:0 0 .6rem;display:flex;align-items:center;gap:.3rem"><i class="ti ti-lock" style="font-size:14px"></i> 고민상담소는 익명으로 작성됩니다</p>` : ''}
+          <textarea id="c-content" class="comment-form" placeholder="댓글을 입력하세요" rows="5" style="width:100%;resize:vertical;min-height:100px"></textarea>
+          <div style="display:flex;align-items:center;gap:1rem;margin-top:.6rem">
+            ${['daily','local'].includes(post.board) ? `<label style="font-size:var(--text-sm)"><input type="checkbox" id="c-anon"> 익명으로 달기</label>` : ''}
+            <button class="btn btn-primary btn-sm" onclick="submitComment()">댓글 등록</button>
+          </div>
+        </div>` : `<p style="margin-top:1rem;color:#888"><a href="/login.html">로그인</a>하면 댓글을 쓸 수 있어요.</p>`}
+    </div>` : ''}
+  `;
+
+  if (isMag && images.length > 1) cnInit(images.length);
+}
+
+// ── 카드뉴스 슬라이더 ────────────────────────────────
+function buildCardNews(images) {
+  const slides = images.map((img, i) =>
+    `<div class="card-news-slide"><img src="${img.file_path}" alt="카드뉴스 ${i+1}번 이미지"></div>`
+  ).join('');
+  const dots = images.map((_, i) =>
+    `<span class="cn-dot${i===0?' active':''}" onclick="cnGoTo(${i})"></span>`
+  ).join('');
+  const multi = images.length > 1;
+  return `
+    <div class="card-news">
+      <div class="card-news-track" id="cn-track">${slides}</div>
+      ${multi ? `
+        <button class="cn-arrow cn-prev hidden" id="cn-prev" onclick="cnNav(-1)" aria-label="이전 슬라이드">&#8249;</button>
+        <button class="cn-arrow cn-next" id="cn-next" onclick="cnNav(1)" aria-label="다음 슬라이드">&#8250;</button>
+        <div class="cn-dots" id="cn-dots">${dots}</div>
+        <div class="cn-counter" id="cn-counter">1 / ${images.length}</div>
+      ` : ''}
+    </div>`;
+}
+
+let _cnIdx = 0;
+let _cnTotal = 0;
+
+function cnInit(total) {
+  _cnTotal = total;
+  _cnIdx = 0;
+  const track = document.getElementById('cn-track');
+  if (!track) return;
+  track.addEventListener('scroll', () => {
+    const idx = Math.round(track.scrollLeft / track.clientWidth);
+    if (idx !== _cnIdx) { _cnIdx = idx; cnUpdate(); }
+  }, { passive: true });
+}
+
+function cnNav(dir) { cnGoTo(_cnIdx + dir); }
+
+function cnGoTo(idx) {
+  const track = document.getElementById('cn-track');
+  if (!track) return;
+  idx = Math.max(0, Math.min(_cnTotal - 1, idx));
+  track.scrollTo({ left: idx * track.clientWidth, behavior: 'smooth' });
+  _cnIdx = idx;
+  cnUpdate();
+}
+
+function cnUpdate() {
+  const counter = document.getElementById('cn-counter');
+  if (counter) counter.textContent = `${_cnIdx + 1} / ${_cnTotal}`;
+  document.querySelectorAll('.cn-dot').forEach((d, i) => d.classList.toggle('active', i === _cnIdx));
+  document.getElementById('cn-prev')?.classList.toggle('hidden', _cnIdx === 0);
+  document.getElementById('cn-next')?.classList.toggle('hidden', _cnIdx === _cnTotal - 1);
+}
+
+// ── 공감 ────────────────────────────────────────────────────
+async function toggleLike() {
+  try {
+    const { count, added } = await api(`/api/reactions/${postId}/like`, { method:'POST' });
+    _likeCount = count;
+    _liked = added;
+    const btn = document.getElementById('like-btn');
+    const countEl = document.getElementById('like-count');
+    if (btn) {
+      btn.innerHTML = `${added ? '❤️' : '🤍'} 공감 <span id="like-count">${count}</span>`;
+      btn.style.borderColor = added ? '#e53935' : '';
+      btn.style.color       = added ? '#c62828' : '';
+      btn.style.background  = added ? '#fff5f5' : '';
+    }
+  } catch(e) { showToast('로그인이 필요합니다.'); }
+}
+
+// ── 삭제 ────────────────────────────────────────────────────
+async function deletePost() {
+  if (!confirm('정말 삭제할까요?')) return;
+  const { post } = await api(`/api/posts/${postId}`);
+  const isNotice = post.section === 'notice';
+  await api(`/api/posts/${postId}`, { method:'DELETE' });
+  showToast('삭제됐습니다.');
+  setTimeout(() => location.href = isNotice ? '/notices.html' : `/board.html?section=${post.section}&board=all`, 1000);
+}
+
+// ── 댓글 ────────────────────────────────────────────────────
+async function submitComment() {
+  const content = document.getElementById('c-content').value.trim();
+  if (!content) return showToast('댓글 내용을 입력해주세요.');
+  const isAnon = (_post?.board === 'counsel' || document.getElementById('c-anon')?.checked) ? '1' : '0';
+  await api('/api/comments', {
+    method: 'POST',
+    body: { post_id: postId, content, is_anonymous: isAnon },
+  });
+  showToast('댓글이 등록됐습니다.');
+  loadPost();
+}
+
+async function deleteComment(id) {
+  if (!confirm('댓글을 삭제할까요?')) return;
+  await api(`/api/comments/${id}`, { method:'DELETE' });
+  document.getElementById(`c-${id}`)?.remove();
+  showToast('삭제됐습니다.');
+}
+
+// ── 보내기 ──────────────────────────────────────────────────
+function shareText() {
+  if (!_post) return '';
+  return `2막이음 | ${_post.title}\n${location.href}`;
+}
+
+async function openShare() {
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: _post.title, text: `2막이음 | ${_post.title}`, url: location.href });
+      return;
+    } catch(e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+  document.getElementById('share-modal').classList.add('open');
+}
+
+function closeShare() {
+  document.getElementById('share-modal').classList.remove('open');
+  document.getElementById('copy-toast').textContent = '';
+}
+
+function shareSms() {
+  location.href = `sms:?body=${encodeURIComponent(shareText())}`;
+}
+
+function shareKakao() {
+  const url  = location.href;
+  const text = `2막이음 | ${_post?.title || document.title}\n${url}`;
+  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    const a = document.createElement('a');
+    a.href = 'kakaotalk://msg/send?msg=' + encodeURIComponent(text);
+    a.click();
+    setTimeout(() => { if (navigator.share) navigator.share({ title: _post?.title, url }).catch(()=>{}); }, 800);
+  } else {
+    copyToClipboard(url);
+    setCopyToast('링크 복사 완료! 카카오톡에 붙여넣기 하세요.');
+  }
+}
+
+function shareBand() {
+  const text = `2막이음 | ${_post?.title || document.title}\n${location.href}`;
+  window.open('https://band.us/plugin/share?body=' + encodeURIComponent(text) + '&route=share',
+    '_blank', 'width=400,height=520,scrollbars=yes');
+}
+
+function shareMail() {
+  const subject = encodeURIComponent(`[2막이음] ${_post.title}`);
+  const body = encodeURIComponent(shareText());
+  location.href = `mailto:?subject=${subject}&body=${body}`;
+}
+
+function copyLink() {
+  copyToClipboard(location.href);
+  showToast('링크를 복사했습니다.');
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+  } else {
+    const el = document.createElement('textarea');
+    el.value = text; document.body.appendChild(el);
+    el.select(); document.execCommand('copy');
+    document.body.removeChild(el);
+  }
+}
+
+function setCopyToast(msg) {
+  const el = document.getElementById('copy-toast');
+  el.textContent = msg;
+  setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 2500);
+}
+
+document.addEventListener('DOMContentLoaded', loadPost);
+</script>
+</body>
+</html>

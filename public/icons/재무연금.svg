@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 동전 스택 -->
+  <ellipse cx="52" cy="88" rx="28" ry="9" fill="#BA7517"/>
+  <rect x="24" y="70" width="56" height="18" rx="0" fill="#EF9F27"/>
+  <ellipse cx="52" cy="70" rx="28" ry="9" fill="#FAC775"/>
+  <rect x="24" y="54" width="56" height="16" rx="0" fill="#EF9F27"/>
+  <ellipse cx="52" cy="54" rx="28" ry="9" fill="#FAC775"/>
+  <rect x="24" y="40" width="56" height="14" rx="0" fill="#EF9F27"/>
+  <ellipse cx="52" cy="40" rx="28" ry="9" fill="#FAEEDA"/>
+  <!-- 위쪽 화살표 -->
+  <path fill="#1D9E75" d="M88 72l-10 12h7v18h6V84h7z"/>
+</svg>

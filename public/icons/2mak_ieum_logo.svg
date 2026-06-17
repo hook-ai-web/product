@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="128" viewBox="0 0 560 128" role="img" aria-label="2막이음 로고">
+  <defs>
+    <linearGradient id="g_bridge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F28C28"/>
+      <stop offset="100%" stop-color="#4FA66A"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(0 5)">
+    <path d="M10 70 C43 15, 108 15, 142 70" fill="none" stroke="url(#g_bridge)" stroke-width="16" stroke-linecap="round"/>
+    <path d="M82 70 C113 31, 166 29, 198 70" fill="none" stroke="#77B255" stroke-width="16" stroke-linecap="round" opacity="0.96"/>
+    <circle cx="82" cy="70" r="9" fill="#F28C28"/>
+    <circle cx="142" cy="70" r="9" fill="#4FA66A"/>
+    <path d="M48 96 H164" stroke="#2F80ED" stroke-width="7" stroke-linecap="round" opacity="0.85"/>
+    <path d="M62 114 H150" stroke="#77B255" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
+  </g>
+  <text x="224" y="86" font-family="'Pretendard','Noto Sans KR','Noto Sans CJK KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="58" font-weight="800" fill="#263238" letter-spacing="-3">2막이음</text>
+</svg>

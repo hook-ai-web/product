@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>커뮤니티 — 2막이음</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="icon" type="image/svg+xml" href="/icons/2mak_ieum_favicon.svg">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .comm-top-panel {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .ctp-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .75rem 1.1rem;
+      border-bottom: 1px solid var(--color-border);
+      font-weight: 700;
+      font-size: .95rem;
+      background: var(--color-bg-subtle);
+    }
+    .ctp-header a { font-size: .78rem; font-weight: 500; color: var(--color-text-muted); text-decoration: none; }
+    .ctp-header a:hover { color: var(--color-primary); }
+    .ctp-date { font-size: .78rem; font-weight: 400; color: var(--color-text-muted); }
+
+    /* 공지 */
+    .notice-item {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .68rem 1.1rem;
+      border-bottom: 1px solid var(--color-border);
+      font-size: .9rem;
+      transition: background .1s;
+    }
+    .notice-item:last-child { border-bottom: none; }
+    .notice-item:hover { background: var(--color-bg-subtle); cursor: pointer; }
+    .notice-badge {
+      flex-shrink: 0;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: .15rem .45rem;
+      border-radius: 4px;
+    }
+    .badge-notice { background: #e0e7ff; color: #3730a3; }
+    .badge-event  { background: #fef3c7; color: #92400e; }
+    .badge-quote  { background: #e8f5e9; color: #1b5e20; }
+    .notice-quote-body {
+      display: none;
+      padding: .65rem 1.1rem .8rem 2.85rem;
+      font-size: .93rem;
+      line-height: 1.85;
+      color: var(--color-text-secondary);
+      border-top: 1px dashed var(--color-border);
+      background: var(--color-bg-subtle);
+      white-space: pre-wrap;
+    }
+    .notice-quote-body .q-author { display:block; margin-top:.4rem; font-size:.82rem; color:var(--color-text-muted); font-weight:600; }
+    .notice-item.quote-row { cursor: pointer; }
+    .notice-item.quote-row .ti-chevron-down { transition: transform .2s; margin-left:auto; flex-shrink:0; color:var(--color-text-muted); font-size:14px; }
+    .notice-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .notice-divider {
+      border: none;
+      border-top: 2px dashed var(--color-border);
+      margin: 0;
+    }
+
+    /* 챌린지 보드 행 */
+    .ch-board-row {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .68rem 1.1rem;
+      text-decoration: none;
+      color: var(--color-text-primary);
+      border-bottom: 1px solid var(--color-border);
+      transition: background .1s;
+      cursor: pointer;
+    }
+    .ch-board-row:last-child { border-bottom: none; }
+    .ch-board-row:hover { background: var(--color-bg-subtle); text-decoration: none; }
+    .ch-board-rows { display: flex; flex-direction: column; }
+    .ch-emoji { font-size: 1.2rem; width: 26px; text-align: center; flex-shrink: 0; }
+    .ch-board-info { flex: 1; min-width: 0; }
+    .ch-board-label { font-weight: 600; font-size: .9rem; }
+    .ch-board-sub { font-size: .78rem; color: var(--color-text-muted); margin-top: .1rem; }
+    .ch-right { display: flex; align-items: center; gap: .4rem; flex-shrink: 0; }
+    .ch-cnt { font-size: .8rem; color: var(--color-text-muted); white-space: nowrap; }
+    .ch-arr { font-size: .85rem; color: var(--color-text-muted); }
+
+    /* ── 커뮤니티 패널 공통 ── */
+    .comm-section { display: flex; flex-direction: column; min-height: 420px; }
+    .cs-desc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cs-posts { flex: 1; }
+    .comm-mobile-shortcuts { display: none; }
+    .comm-sc-card {
+      display: flex; flex-direction: column; align-items: center;
+      text-decoration: none;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--sp-4) var(--sp-3);
+      gap: var(--sp-3);
+      transition: box-shadow .15s;
+    }
+    .comm-sc-card:hover { box-shadow: var(--shadow-md); text-decoration: none; }
+    .comm-sc-icon {
+      width: 100%; aspect-ratio: 1;
+      border-radius: var(--radius-xl);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 56px;
+    }
+    .comm-sc-label { font-size: 17px; font-weight: 700; color: var(--color-text-primary); text-align: center; }
+    .like-btn {
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .25rem .7rem;
+      border: 1.5px solid var(--color-border); border-radius: 999px;
+      background: #fff; font-size: var(--text-sm); cursor: pointer;
+      color: var(--color-text-secondary); transition: background .12s, border-color .12s;
+    }
+    .like-btn:hover { border-color: #e57373; background: #fff5f5; }
+    .like-btn.liked { border-color: #e53935; background: #fff5f5; color: #c62828; font-weight: 600; }
+    .local-region-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .4rem; }
+    .local-region-btn {
+      display: block; text-align: center; padding: .4rem .2rem;
+      border: 1.5px solid var(--color-border); border-radius: 8px;
+      font-size: var(--text-sm); font-weight: 600;
+      color: var(--color-text-secondary); text-decoration: none;
+      transition: background .12s, border-color .12s, color .12s;
+    }
+    .local-region-btn:hover {
+      background: var(--color-primary-light); border-color: var(--color-primary); color: var(--color-primary); text-decoration: none;
+    }
+
+    /* PC: comm-top-row는 숨기고 comm-desktop-content 내부 첫 행으로 표시 */
+    .comm-top-row { display: none; }
+
+    @media (max-width: 900px) {
+      /* 모바일: comm-top-row 최상단 표시 */
+      .comm-top-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--sp-4);
+        padding: var(--sp-4) var(--sp-4);
+        margin-bottom: 0;
+      }
+      .comm-desktop-content { display: none; }
+      .comm-mobile-shortcuts {
+        display: grid; grid-template-columns: repeat(2, 1fr);
+        gap: var(--sp-4); padding: var(--sp-4) var(--sp-4) var(--sp-5);
+        background: var(--color-bg-subtle);
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="header-wrap"></div>
+
+<!-- 공지&이벤트 + 건강챌린지 (항상 표시, 모바일 최상단) -->
+<div class="comm-top-row">
+  <div class="comm-top-panel">
+    <div class="ctp-header">
+      <span>📢 공지&amp;이벤트</span>
+      <a href="/notices.html">전체보기 →</a>
+    </div>
+    <div id="notice-list">
+      <div class="notice-item"><span style="color:var(--color-text-muted)">불러오는 중...</span></div>
+    </div>
+  </div>
+  <div class="comm-top-panel">
+    <div class="ctp-header">
+      <span>🏃 오늘의 건강 챌린지</span>
+      <span class="ctp-date" id="challenge-date"></span>
+    </div>
+    <div class="ch-board-rows" id="challenge-rows">
+      <div style="padding:1.5rem;color:var(--color-text-muted)">불러오는 중...</div>
+    </div>
+  </div>
+</div>
+
+<!-- 모바일 전용: 커뮤니티 아이콘 -->
+<div class="comm-mobile-shortcuts">
+  <a href="/board.html?section=community&board=daily" class="comm-sc-card">
+    <div class="comm-sc-icon" style="background:#E8F8F0">
+      <img src="/icons/일상나눔.svg" alt="일상 공유" style="width:62%;height:62%;object-fit:contain">
+    </div>
+    <span class="comm-sc-label">일상 공유</span>
+  </a>
+  <a href="/board.html?section=community&board=counsel" class="comm-sc-card">
+    <div class="comm-sc-icon" style="background:#FFF1E4">
+      <img src="/icons/고민상담소.svg" alt="고민상담소" style="width:62%;height:62%;object-fit:contain">
+    </div>
+    <span class="comm-sc-label">고민상담소</span>
+  </a>
+  <a href="/board.html?section=community&board=market" class="comm-sc-card">
+    <div class="comm-sc-icon" style="background:#FFF1E4">
+      <img src="/icons/중고거래.svg" alt="따뜻한 장터" style="width:62%;height:62%;object-fit:contain">
+    </div>
+    <span class="comm-sc-label">따뜻한 장터</span>
+  </a>
+  <a href="/board.html?section=community&board=local" class="comm-sc-card">
+    <div class="comm-sc-icon" style="background:#E8F5E9;font-size:52px">📍</div>
+    <span class="comm-sc-label">우리 동네 소식</span>
+  </a>
+  <a href="/board.html?section=community&board=talent" class="comm-sc-card">
+    <div class="comm-sc-icon" style="background:#E8F4FF">
+      <img src="/icons/정보및꿀팁.svg" alt="생활의 지혜" style="width:62%;height:62%;object-fit:contain">
+    </div>
+    <span class="comm-sc-label">생활의 지혜</span>
+  </a>
+  <a href="/board.html?section=community&board=second" class="comm-sc-card">
+    <div class="comm-sc-icon" style="background:#F3E8FF">
+      <img src="/icons/인생2막준비.svg" alt="인생2막준비" style="width:62%;height:62%;object-fit:contain">
+    </div>
+    <span class="comm-sc-label">인생2막준비</span>
+  </a>
+</div>
+
+<!-- 데스크톱 전용 패널 -->
+<div class="comm-desktop-content" style="max-width:var(--max-w);margin:0 auto">
+
+  <!-- 행 0: 공지&이벤트 | 오늘의 건강 챌린지 (PC 전용) -->
+  <div class="comm-grid" style="margin-bottom:var(--sp-5)">
+    <div class="comm-top-panel">
+      <div class="ctp-header">
+        <span>📢 공지&amp;이벤트</span>
+        <a href="/notices.html">전체보기 →</a>
+      </div>
+      <div id="notice-list-pc">
+        <div class="notice-item"><span style="color:var(--color-text-muted)">불러오는 중...</span></div>
+      </div>
+    </div>
+    <div class="comm-top-panel">
+      <div class="ctp-header">
+        <span>🏃 오늘의 건강 챌린지</span>
+        <span class="ctp-date" id="challenge-date-pc"></span>
+      </div>
+      <div class="ch-board-rows" id="challenge-rows-pc">
+        <div style="padding:1.5rem;color:var(--color-text-muted)">불러오는 중...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 행 1: 일상 공유 | 고민상담소 -->
+  <div class="comm-grid" style="margin-bottom:var(--sp-5)">
+    <!-- 일상 공유 -->
+    <div class="comm-section">
+      <div class="cs-header">
+        <div class="cs-header-left">
+          <div class="cs-icon" style="background:#E8F8F0;display:flex;align-items:center;justify-content:center">
+            <img src="/icons/일상나눔.svg" alt="일상 공유" style="width:68%;height:68%;object-fit:contain">
+          </div>
+          <div>
+            <a href="/board.html?section=community&board=daily" class="cs-title">
+              일상 공유 <i class="ti ti-arrow-right" style="font-size:15px"></i>
+            </a>
+            <div class="cs-desc">가벼운 일상을 공유해요</div>
+          </div>
+        </div>
+        <a href="/board.html?section=community&board=daily" class="cs-more">전체 보기</a>
+      </div>
+      <div class="cs-posts" id="daily-list"><div class="cs-post-item"><span style="color:var(--color-text-muted)">불러오는 중...</span></div></div>
+      <div style="padding:var(--sp-3) var(--sp-5);border-top:1px solid var(--color-border)">
+        <a href="/write.html?section=community&board=daily" id="daily-write-btn" class="btn btn-outline btn-sm" style="display:none">
+          <i class="ti ti-pencil"></i> 일상 나누기
+        </a>
+      </div>
+    </div>
+    <!-- 고민상담소 -->
+    <div class="comm-section">
+      <div class="cs-header">
+        <div class="cs-header-left">
+          <div class="cs-icon" style="background:#FFF1E4;display:flex;align-items:center;justify-content:center">
+            <img src="/icons/고민상담소.svg" alt="고민상담소" style="width:68%;height:68%;object-fit:contain">
+          </div>
+          <div>
+            <a href="/board.html?section=community&board=counsel" class="cs-title">
+              고민 상담소 <i class="ti ti-arrow-right" style="font-size:15px"></i>
+            </a>
+            <div class="cs-desc">익명으로 털어놓는 우리들의 이야기</div>
+          </div>
+        </div>
+        <a href="/board.html?section=community&board=counsel" class="cs-more">전체 보기</a>
+      </div>
+      <div class="cs-posts" id="counsel-list"><div class="cs-post-item"><span style="color:var(--color-text-muted)">불러오는 중...</span></div></div>
+      <div style="padding:var(--sp-3) var(--sp-5);border-top:1px solid var(--color-border)">
+        <a href="/write.html?section=community&board=counsel" id="counsel-write-btn" class="btn btn-outline btn-sm" style="display:none">
+          <i class="ti ti-pencil"></i> 고민 털어놓기
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 행 2: 따뜻한 장터 | 우리 동네 소식 -->
+  <div class="comm-grid" style="margin-bottom:var(--sp-5)">
+    <!-- 따뜻한 장터 -->
+    <div class="comm-section">
+      <div class="cs-header">
+        <div class="cs-header-left">
+          <div class="cs-icon" style="background:#FFF1E4;display:flex;align-items:center;justify-content:center">
+            <img src="/icons/중고거래.svg" alt="따뜻한 장터" style="width:68%;height:68%;object-fit:contain">
+          </div>
+          <div>
+            <a href="/board.html?section=community&board=market" class="cs-title">
+              따뜻한 장터 <i class="ti ti-arrow-right" style="font-size:15px"></i>
+            </a>
+            <div class="cs-desc">정든 물건 거래와 아름다운 나눔</div>
+          </div>
+        </div>
+        <a href="/board.html?section=community&board=market" class="cs-more">전체 보기</a>
+      </div>
+      <div class="cs-cats" id="market-cats">
+        <a class="cs-cat-chip active" data-trade="" href="#">전체</a>
+        <a class="cs-cat-chip" data-trade="팝니다" href="#" style="background:#FFF0E0;border-color:#FFB899;color:#C05000">팝니다</a>
+        <a class="cs-cat-chip" data-trade="삽니다" href="#" style="background:#E8F4FF;border-color:#90C4FF;color:#1055A0">삽니다</a>
+        <a class="cs-cat-chip" data-trade="나눔합니다" href="#">나눔합니다</a>
+        <a class="cs-cat-chip" data-trade="교환합니다" href="#">교환합니다</a>
+      </div>
+      <div class="cs-posts" id="market-list"><div class="cs-post-item"><span style="color:var(--color-text-muted)">불러오는 중...</span></div></div>
+      <div style="padding:var(--sp-3) var(--sp-5);border-top:1px solid var(--color-border)">
+        <a href="/write.html?section=community&board=market" id="market-write-btn" class="btn btn-outline btn-sm" style="display:none">
+          <i class="ti ti-pencil"></i> 물건 올리기
+        </a>
+      </div>
+    </div>
+    <!-- 우리 동네 소식 -->
+    <div class="comm-section">
+      <div class="cs-header">
+        <div class="cs-header-left">
+          <div class="cs-icon" style="background:#E8F5E9;display:flex;align-items:center;justify-content:center;font-size:36px">📍</div>
+          <div>
+            <a href="/board.html?section=community&board=local" class="cs-title">
+              우리 동네 소식 <i class="ti ti-arrow-right" style="font-size:15px"></i>
+            </a>
+            <div class="cs-desc">우리 동네 이야기·모임·정보</div>
+          </div>
+        </div>
+        <a href="/board.html?section=community&board=local" class="cs-more">전체 보기</a>
+      </div>
+      <div style="padding:var(--sp-3) var(--sp-5)">
+        <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin:0 0 var(--sp-3)">지역을 선택해 해당 지역 게시글을 확인하세요</p>
+        <div class="local-region-grid">
+          <a href="/board.html?section=community&board=local&region=서울" class="local-region-btn">서울</a>
+          <a href="/board.html?section=community&board=local&region=경기" class="local-region-btn">경기</a>
+          <a href="/board.html?section=community&board=local&region=인천" class="local-region-btn">인천</a>
+          <a href="/board.html?section=community&board=local&region=부산" class="local-region-btn">부산</a>
+          <a href="/board.html?section=community&board=local&region=대구" class="local-region-btn">대구</a>
+          <a href="/board.html?section=community&board=local&region=대전" class="local-region-btn">대전</a>
+          <a href="/board.html?section=community&board=local&region=광주" class="local-region-btn">광주</a>
+          <a href="/board.html?section=community&board=local&region=울산" class="local-region-btn">울산</a>
+          <a href="/board.html?section=community&board=local&region=세종" class="local-region-btn">세종</a>
+          <a href="/board.html?section=community&board=local&region=강원" class="local-region-btn">강원</a>
+          <a href="/board.html?section=community&board=local&region=충북" class="local-region-btn">충북</a>
+          <a href="/board.html?section=community&board=local&region=충남" class="local-region-btn">충남</a>
+          <a href="/board.html?section=community&board=local&region=전북" class="local-region-btn">전북</a>
+          <a href="/board.html?section=community&board=local&region=전남" class="local-region-btn">전남</a>
+          <a href="/board.html?section=community&board=local&region=경북" class="local-region-btn">경북</a>
+          <a href="/board.html?section=community&board=local&region=경남" class="local-region-btn">경남</a>
+          <a href="/board.html?section=community&board=local&region=제주" class="local-region-btn">제주</a>
+        </div>
+      </div>
+      <div style="padding:var(--sp-3) var(--sp-5);border-top:1px solid var(--color-border)">
+        <a href="/write.html?section=community&board=local" id="local-write-btn" class="btn btn-outline btn-sm" style="display:none">
+          <i class="ti ti-pencil"></i> 글쓰기
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 행 3: 생활의 지혜 | 인생2막준비 -->
+  <div class="comm-grid" style="margin-bottom:var(--sp-5)">
+    <!-- 생활의 지혜 -->
+    <div class="comm-section">
+      <div class="cs-header">
+        <div class="cs-header-left">
+          <div class="cs-icon" style="background:#E8F4FF;display:flex;align-items:center;justify-content:center">
+            <img src="/icons/정보및꿀팁.svg" alt="생활의 지혜" style="width:68%;height:68%;object-fit:contain">
+          </div>
+          <div>
+            <a href="/board.html?section=community&board=talent" class="cs-title">
+              생활의 지혜 <i class="ti ti-arrow-right" style="font-size:15px"></i>
+            </a>
+            <div class="cs-desc">생활정보/노하우, 건강한 식단 레시피 등</div>
+          </div>
+        </div>
+        <a href="/board.html?section=community&board=talent" class="cs-more">전체 보기</a>
+      </div>
+      <div class="cs-posts" id="talent-list"><div class="cs-post-item"><span style="color:var(--color-text-muted)">불러오는 중...</span></div></div>
+      <div style="padding:var(--sp-3) var(--sp-5);border-top:1px solid var(--color-border)">
+        <a href="/write.html?section=community&board=talent" id="talent-write-btn" class="btn btn-outline btn-sm" style="display:none">
+          <i class="ti ti-pencil"></i> 노하우 나누기
+        </a>
+      </div>
+    </div>
+    <!-- 인생2막준비 -->
+    <div class="comm-section">
+      <div class="cs-header">
+        <div class="cs-header-left">
+          <div class="cs-icon" style="background:#F3E8FF;display:flex;align-items:center;justify-content:center">
+            <img src="/icons/인생2막준비.svg" alt="인생2막준비" style="width:68%;height:68%;object-fit:contain">
+          </div>
+          <div>
+            <a href="/board.html?section=community&board=second" class="cs-title">
+              인생2막준비 <i class="ti ti-arrow-right" style="font-size:15px"></i>
+            </a>
+            <div class="cs-desc">소소한 일거리·구인구직, 노후자산관리·재테크 노하우</div>
+          </div>
+        </div>
+        <a href="/board.html?section=community&board=second" class="cs-more">전체 보기</a>
+      </div>
+      <div class="cs-posts" id="second-list"><div class="cs-post-item"><span style="color:var(--color-text-muted)">불러오는 중...</span></div></div>
+      <div style="padding:var(--sp-3) var(--sp-5);border-top:1px solid var(--color-border)">
+        <a href="/write.html?section=community&board=second" id="second-write-btn" class="btn btn-outline btn-sm" style="display:none">
+          <i class="ti ti-pencil"></i> 노하우 공유하기
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="footer-wrap"></div>
+<script src="/js/common.js"></script>
+<script>
+let isLoggedIn = false;
+let isAdmin    = false;
+
+// ── 공지&이벤트 ─────────────────────────────────────────────────
+async function loadNotices() {
+  try {
+    const { notices, todayQuote } = await api('/api/challenges/notices');
+    const items = [];
+    notices.forEach(r => {
+      const badgeCls = r.type === 'event' ? 'badge-event' : 'badge-notice';
+      const badgeTxt = r.type === 'event' ? '이벤트' : '공지';
+      items.push(`<div class="notice-item" style="cursor:pointer" onclick="location.href='/post.html?id=${r.id}'"><span class="notice-badge ${badgeCls}">${badgeTxt}</span><span class="notice-title">${r.title}</span></div>`);
+    });
+    if (todayQuote) {
+      if (items.length) items.push('<hr class="notice-divider">');
+      items.push(`
+        <div class="notice-item" style="align-items:flex-start;cursor:default">
+          <span class="notice-badge badge-quote" style="margin-top:2px;flex-shrink:0">명언</span>
+          <span class="notice-title" style="white-space:normal;line-height:1.7;word-break:break-word">
+            "${todayQuote.content}"${todayQuote.author ? `<span style="display:block;font-size:.8rem;color:var(--color-text-muted);margin-top:.25rem;font-weight:600">— ${todayQuote.author}</span>` : ''}
+          </span>
+        </div>`);
+    }
+    const html = items.length ? items.join('') : '<div class="notice-item"><span style="color:var(--color-text-muted)">등록된 공지가 없습니다.</span></div>';
+    ['notice-list','notice-list-pc'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = html; });
+  } catch(e) {}
+}
+
+function toggleNoticeQuote(row) {
+  const body = row.nextElementSibling;
+  const icon = row.querySelector('.ti-chevron-down');
+  const open = body.style.display === 'block';
+  body.style.display = open ? 'none' : 'block';
+  if (icon) icon.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+function openNoticeForm() {
+  const type  = prompt('유형을 입력하세요 (notice / event)', 'notice');
+  if (!type) return;
+  const title = prompt('제목을 입력하세요');
+  if (!title) return;
+  const link  = prompt('링크 (없으면 빈칸)') || '';
+  api('/api/challenges/notices', { method:'POST', body:{ type, title, link } })
+    .then(() => { showToast('공지가 등록되었습니다.'); loadNotices(); })
+    .catch(e => showToast(e.message, 'error'));
+}
+
+// ── 오늘의 건강 챌린지 ───────────────────────────────────────────
+const CH_SUBS = {
+  ch_walk:    '산책, 운동, 만보기 인증',
+  ch_morning: '아침 물/건강음료 인증',
+  ch_health:  '영양제/건강루틴 인증',
+};
+
+async function loadChallenges() {
+  try {
+    const now = new Date();
+    const dateText = `${now.getMonth()+1}월 ${now.getDate()}일`;
+    ['challenge-date','challenge-date-pc'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = dateText; });
+    const stats = await api('/api/challenges/board-stats');
+    const rowsHtml = stats.map(b => `
+      <a href="/challenge-board.html?board=${b.board}" class="ch-board-row">
+        <span class="ch-emoji">${b.emoji}</span>
+        <div class="ch-board-info">
+          <div class="ch-board-label">${b.label}</div>
+          <div class="ch-board-sub">${CH_SUBS[b.board] || ''}</div>
+        </div>
+        <div class="ch-right">
+          <span class="ch-cnt">${b.count > 0 ? b.count + '명 참여중' : '첫 도전자 모집중'}</span>
+          <i class="ti ti-chevron-right ch-arr"></i>
+        </div>
+      </a>`).join('');
+    ['challenge-rows','challenge-rows-pc'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = rowsHtml; });
+  } catch(e) {}
+}
+
+// ── 커뮤니티 게시판 ──────────────────────────────────────────────
+async function loadDaily() {
+  try {
+    const { rows } = await api('/api/posts?section=community&board=daily&limit=4');
+    const el = document.getElementById('daily-list');
+    if (!rows.length) { el.innerHTML = '<div class="cs-post-item"><span style="color:var(--color-text-muted)">게시글이 없습니다.</span></div>'; return; }
+    el.innerHTML = rows.map(r => `
+      <div class="cs-post-item" onclick="location.href='/post.html?id=${r.id}'">
+        <div class="cs-post-thumb" style="background:var(--cat-health-bg)">☀️</div>
+        <div class="cs-post-body">
+          <div class="cs-post-title">${r.title}</div>
+          <div class="cs-post-meta"><span>${r.author}</span><span>${timeAgo(r.created_at)}</span><span><i class="ti ti-eye" style="font-size:12px"></i>${r.view_count}</span></div>
+        </div>
+      </div>`).join('');
+  } catch(e) {}
+}
+
+let counselPosts = [], likeCounts = {};
+function renderCounsel() {
+  const el = document.getElementById('counsel-list');
+  if (!counselPosts.length) { el.innerHTML = '<div class="cs-post-item"><span style="color:var(--color-text-muted)">게시글이 없습니다.</span></div>'; return; }
+  el.innerHTML = counselPosts.slice(0,4).map(p => {
+    const lc = likeCounts[p.id] || { like:0 };
+    return `<div class="cs-post-item" onclick="location.href='/post.html?id=${p.id}'">
+      <div class="cs-post-thumb">🤔</div>
+      <div class="cs-post-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem">
+          <div class="cs-post-title" style="margin:0;flex:1;min-width:0">${p.title}</div>
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted);white-space:nowrap;flex-shrink:0">❤️ ${lc.like||0}</span>
+        </div>
+        <div class="cs-post-meta">익명 · ${timeAgo(p.created_at)}</div>
+      </div></div>`;
+  }).join('');
+}
+async function loadCounsel() {
+  try {
+    const { rows } = await api('/api/posts?section=community&board=counsel&limit=10');
+    counselPosts = rows;
+    if (rows.length) { const ids = rows.map(r=>r.id).join(','); likeCounts = await api(`/api/reactions/counts?post_ids=${ids}`); }
+    renderCounsel();
+  } catch(e) {}
+}
+
+async function loadMarket(trade = '') {
+  try {
+    let url = '/api/posts?section=community&board=market&limit=4';
+    if (trade) url += `&trade_type=${encodeURIComponent(trade)}`;
+    const { rows } = await api(url);
+    const el = document.getElementById('market-list');
+    if (!rows.length) { el.innerHTML = '<div class="cs-post-item"><span style="color:var(--color-text-muted)">게시글이 없습니다.</span></div>'; return; }
+    const cls = {팝니다:'tag-sell',삽니다:'tag-buy',나눔합니다:'tag-share',교환합니다:'tag-trade'};
+    el.innerHTML = rows.map(r => `
+      <div class="cs-post-item" onclick="location.href='/post.html?id=${r.id}'">
+        <div class="cs-post-thumb" style="background:var(--cat-job-bg)">🛒</div>
+        <div class="cs-post-body">
+          <div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:4px;flex-wrap:wrap">
+            ${r.trade_type ? `<span class="market-tag ${cls[r.trade_type]||''}">${r.trade_type}</span>` : ''}
+            <span class="cs-post-title" style="margin:0">${r.title}</span>
+          </div>
+          <div class="cs-post-meta">
+            ${r.region ? `<span><i class="ti ti-map-pin" style="font-size:12px"></i>${r.region}</span>` : ''}
+            ${r.price > 0 ? `<strong style="color:var(--color-accent)">${r.price.toLocaleString()}원</strong>` : ''}
+            <span>${timeAgo(r.created_at)}</span>
+          </div>
+        </div>
+      </div>`).join('');
+  } catch(e) {}
+}
+document.getElementById('market-cats').addEventListener('click', e => {
+  const chip = e.target.closest('.cs-cat-chip'); if (!chip) return; e.preventDefault();
+  document.querySelectorAll('#market-cats .cs-cat-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active'); loadMarket(chip.dataset.trade);
+});
+
+async function loadTalent() {
+  try {
+    const { rows } = await api('/api/posts?section=community&board=talent&limit=4');
+    const el = document.getElementById('talent-list');
+    if (!rows.length) { el.innerHTML = '<div class="cs-post-item"><span style="color:var(--color-text-muted)">게시글이 없습니다.</span></div>'; return; }
+    el.innerHTML = rows.map(r => `
+      <div class="cs-post-item" onclick="location.href='/post.html?id=${r.id}'">
+        <div class="cs-post-thumb" style="background:var(--cat-learn-bg)">💡</div>
+        <div class="cs-post-body">
+          <div class="cs-post-title">${r.title}</div>
+          <div class="cs-post-meta"><span>${r.author}</span><span>${timeAgo(r.created_at)}</span></div>
+        </div>
+      </div>`).join('');
+  } catch(e) {}
+}
+
+async function loadSecond() {
+  try {
+    const { rows } = await api('/api/posts?section=community&board=second&limit=4');
+    const el = document.getElementById('second-list');
+    if (!rows.length) { el.innerHTML = '<div class="cs-post-item"><span style="color:var(--color-text-muted)">게시글이 없습니다.</span></div>'; return; }
+    el.innerHTML = rows.map(r => `
+      <div class="cs-post-item" onclick="location.href='/post.html?id=${r.id}'">
+        <div class="cs-post-thumb" style="background:#F3E8FF">🌱</div>
+        <div class="cs-post-body">
+          <div class="cs-post-title">${r.title}</div>
+          <div class="cs-post-meta"><span>${r.author}</span><span>${timeAgo(r.created_at)}</span></div>
+        </div>
+      </div>`).join('');
+  } catch(e) {}
+}
+
+// ── 초기화 ───────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  loadNotices();
+  loadChallenges();
+  loadDaily();
+  loadCounsel();
+  loadMarket();
+  loadTalent();
+  loadSecond();
+
+  const { loggedIn, user } = await api('/api/auth/me');
+  isLoggedIn = loggedIn;
+  isAdmin    = user?.role === 'admin';
+
+  if (loggedIn) {
+    ['daily-write-btn','counsel-write-btn','market-write-btn','talent-write-btn','local-write-btn','second-write-btn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'inline-flex';
+    });
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2막이음 — 인생 2막을 함께하는 정보 플랫폼</title>
+  <meta name="description" content="중장년·시니어를 위한 건강·재무·일자리·지원혜택·커뮤니티 종합 플랫폼">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="icon" type="image/svg+xml" href="/icons/2mak_ieum_favicon.svg">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#e8702a">
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:site_name"   content="2막이음">
+  <meta property="og:title"       content="2막이음 — 인생 2막을 함께하는 정보 플랫폼">
+  <meta property="og:description" content="중장년·시니어를 위한 건강·재무·일자리·지원혜택·커뮤니티 종합 플랫폼">
+  <meta property="og:url"         content="https://yourdomain.com/">
+  <meta property="og:image"       content="https://yourdomain.com/icons/icon-512.png">
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "2막이음",
+    "alternateName": "세컨드링크",
+    "url": "https://yourdomain.com",
+    "logo": "https://yourdomain.com/icons/icon-512.png",
+    "description": "중장년·시니어를 위한 건강·재무·일자리·지원혜택·커뮤니티 종합 플랫폼",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "availableLanguage": "Korean"
+    }
+  }
+  </script>
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    /* 신뢰 지표 바 (Image #4 스타일) */
+    .feature-bar {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .feature-bar-inner {
+      width: 100%;
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: var(--sp-4) var(--sp-5);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-4) var(--sp-4);
+      text-decoration: none;
+      transition: background .12s;
+      border-radius: var(--radius-md);
+    }
+    .feature-item:hover { background: var(--color-bg-subtle); text-decoration: none; }
+    /* 가운데 아이템 좌우 구분선 */
+    .feature-item:nth-child(2) {
+      border-left: 1px solid var(--color-border);
+      border-right: 1px solid var(--color-border);
+      border-radius: 0;
+    }
+    .feature-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .feature-text strong {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin-bottom: 2px;
+    }
+    .feature-text span {
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+    }
+
+    /* 홈 공통 래퍼 — width:100% 필수 (flex-column body에서 margin:auto가 shrink 유발) */
+    .home-wrap {
+      width: 100%;
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 var(--sp-5);
+    }
+    .hs { padding: var(--sp-6) 0; }
+    .hs + .hs { padding-top: 0; }
+    .hs-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--sp-4);
+      padding-bottom: var(--sp-3);
+      border-bottom: 2px solid var(--color-border);
+    }
+    .hs-title {
+      font-size: var(--text-md);
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+    .hs-more {
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      font-weight: 500;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .hs-more:hover { text-decoration: underline; }
+
+    .hs-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-6);
+    }
+
+    /* 모바일 아이콘 단축메뉴 (기본: 숨김) */
+    .mobile-shortcuts { display: none; }
+
+    @media (max-width: 768px) {
+      .feature-bar { display: none; }
+      .mobile-shortcuts {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        background: var(--color-bg);
+        border-bottom: 1px solid var(--color-border);
+        padding: var(--sp-3) var(--sp-2);
+      }
+      .home-sc-card {
+        display: flex; flex-direction: column; align-items: center;
+        gap: 6px; text-decoration: none; padding: var(--sp-1) 0;
+      }
+      .home-sc-card:hover { text-decoration: none; }
+      .home-sc-icon {
+        width: 50px; height: 50px;
+        border-radius: var(--radius-lg);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 24px;
+      }
+      .home-sc-label {
+        font-size: 11px; color: var(--color-text-secondary);
+        font-weight: 500; text-align: center; white-space: nowrap;
+      }
+      .hs-two-col { grid-template-columns: 1fr; gap: var(--sp-5); }
+    }
+
+    /* 데스크톱: 생활정보·커뮤니티 카드 4번째 숨김 */
+    @media (min-width: 769px) {
+      #life-cards .card:nth-child(4),
+      #comm-cards .card:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 모바일 전용: 5개 섹션 아이콘 (2열 큰 카드) -->
+<div class="mobile-shortcuts">
+  <a href="/board.html?section=life&board=all" class="home-sc-card">
+    <div class="home-sc-icon" style="background:var(--cat-health-bg)">📰</div>
+    <span class="home-sc-label">생활정보</span>
+  </a>
+  <div class="home-sc-card" style="opacity:.45;cursor:default;pointer-events:none">
+    <div class="home-sc-icon" style="background:var(--cat-learn-bg)">📚</div>
+    <span class="home-sc-label">배움터<br><small style="font-size:.65rem;font-weight:400;color:#888">준비중</small></span>
+  </div>
+  <a href="/board.html?section=job&board=all" class="home-sc-card">
+    <div class="home-sc-icon" style="background:var(--cat-job-bg)">💼</div>
+    <span class="home-sc-label">일자리</span>
+  </a>
+  <a href="/board.html?section=benefit&board=all" class="home-sc-card">
+    <div class="home-sc-icon" style="background:var(--cat-benefit-bg)">🎁</div>
+    <span class="home-sc-label">지원혜택</span>
+  </a>
+  <a href="/community.html" class="home-sc-card">
+    <div class="home-sc-icon" style="background:var(--color-primary-light)">🤝</div>
+    <span class="home-sc-label">커뮤니티</span>
+  </a>
+</div>
+
+
+<!-- ── 홈 본문 ── -->
+<div class="home-wrap">
+
+  <!-- 생활정보 최신글 -->
+  <div class="hs">
+    <div class="hs-header">
+      <span class="hs-title">📰 생활정보 최신글</span>
+      <a href="/board.html?section=life&board=all" class="hs-more">
+        더보기 <i class="ti ti-arrow-right" style="font-size:13px"></i>
+      </a>
+    </div>
+    <div class="card-grid" id="life-cards">
+      <div style="grid-column:1/-1;color:var(--color-text-muted);font-size:var(--text-sm)">불러오는 중...</div>
+    </div>
+  </div>
+
+  <!-- 일자리 + 지원혜택 -->
+  <div class="hs">
+    <div class="hs-two-col">
+      <div>
+        <div class="hs-header">
+          <span class="hs-title">💼 일자리</span>
+          <a href="/board.html?section=job&board=all" class="hs-more">더보기</a>
+        </div>
+        <div id="job-list"></div>
+      </div>
+      <div>
+        <div class="hs-header">
+          <span class="hs-title">🎁 지원혜택</span>
+          <a href="/board.html?section=benefit&board=all" class="hs-more">더보기</a>
+        </div>
+        <div id="benefit-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 커뮤니티 최신글 -->
+  <div class="hs">
+    <div class="hs-header">
+      <span class="hs-title">🤝 커뮤니티 최신글</span>
+      <a href="/community.html" class="hs-more">
+        커뮤니티 가기 <i class="ti ti-arrow-right" style="font-size:13px"></i>
+      </a>
+    </div>
+    <div class="card-grid" id="comm-cards">
+      <div style="grid-column:1/-1;color:var(--color-text-muted);font-size:var(--text-sm)">불러오는 중...</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+const BM = {
+  health:{bg:'var(--cat-health-bg)',emoji:'🏃',label:'건강'},
+  finance:{bg:'var(--cat-money-bg)',emoji:'💰',label:'재무·연금'},
+  travel:{bg:'var(--cat-travel-bg)',emoji:'✈️',label:'여행·여가'},
+  housing:{bg:'#f3e8ff',emoji:'🏠',label:'주거생활'},
+  family:{bg:'#fce7f3',emoji:'👨‍👩‍👧',label:'가족관계'},
+  digital:{bg:'var(--cat-learn-bg)',emoji:'📱',label:'디지털생활'},
+  law:{bg:'var(--color-bg-subtle)',emoji:'⚖️',label:'법률·소비자'},
+  startup:{bg:'var(--cat-care-bg)',emoji:'🚀',label:'창업'},
+  recruit:{bg:'var(--cat-job-bg)',emoji:'👔',label:'채용정보'},
+  guide:{bg:'var(--cat-travel-bg)',emoji:'🗺️',label:'일자리 가이드'},
+  gov:{bg:'#e8eaf6',emoji:'🏛️',label:'정부지원금'},
+  welfare:{bg:'var(--cat-benefit-bg)',emoji:'🤝',label:'복지혜택'},
+  care:{bg:'var(--cat-care-bg)',emoji:'👴',label:'부모님요양'},
+  counsel:{bg:'#fef3e8',emoji:'🤔',label:'고민상담소'},
+  market:{bg:'var(--cat-job-bg)',emoji:'🛒',label:'중고거래'},
+  talent:{bg:'var(--cat-learn-bg)',emoji:'🎁',label:'정보 및 꿀팁'},
+  daily:{bg:'var(--cat-health-bg)',emoji:'☀️',label:'일상나눔'},
+  all:{bg:'var(--color-bg-subtle)',emoji:'📰',label:'전체'},
+};
+
+function postCard(r) {
+  const bm = BM[r.board] || BM.all;
+  const thumbInner = r.thumb
+    ? `<img src="${r.thumb}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`
+    : bm.emoji;
+  const thumbBg = r.thumb ? 'background:#e8ede9' : `background:${bm.bg}`;
+  return `
+    <a href="/post.html?id=${r.id}" class="card">
+      <div class="card-thumb" style="${thumbBg}">${thumbInner}</div>
+      <div class="card-body">
+        <div class="card-tag">${bm.label}</div>
+        <div class="card-title">${r.title}</div>
+        <div class="card-desc" style="display:flex;gap:var(--sp-3);margin-top:var(--sp-2)">
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted)">
+            <i class="ti ti-eye" style="font-size:11px"></i> ${r.view_count}
+          </span>
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted)">${fmtDate(r.created_at).slice(5,10)}</span>
+        </div>
+      </div>
+    </a>`;
+}
+
+function postRow(r) {
+  const bm = BM[r.board] || BM.all;
+  return `
+    <a href="/post.html?id=${r.id}" class="article-item" style="padding:var(--sp-3)">
+      <div class="article-thumb" style="background:${bm.bg};width:44px;height:38px;font-size:18px">${bm.emoji}</div>
+      <div class="article-content">
+        <div class="art-title" style="font-size:var(--text-sm)">${r.title}</div>
+        <div class="art-meta" style="margin-top:4px">
+          <i class="ti ti-eye"></i>${r.view_count}
+          <span>${fmtDate(r.created_at).slice(5,10)}</span>
+        </div>
+      </div>
+    </a>`;
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const [lifeD, jobD, benD, commD] = await Promise.all([
+      api('/api/posts?section=life&board=all&limit=4'),
+      api('/api/posts?section=job&board=all&limit=5'),
+      api('/api/posts?section=benefit&board=all&limit=5'),
+      api('/api/posts?section=community&board=all&limit=4'),
+    ]);
+    const empty = '<p style="color:var(--color-text-muted);font-size:var(--text-sm);padding:var(--sp-3) 0">게시글이 없습니다.</p>';
+    document.getElementById('life-cards').innerHTML   = lifeD.rows.length ? lifeD.rows.map(postCard).join('') : empty;
+    document.getElementById('job-list').innerHTML     = jobD.rows.length  ? jobD.rows.map(postRow).join('')  : empty;
+    document.getElementById('benefit-list').innerHTML = benD.rows.length  ? benD.rows.map(postRow).join('')  : empty;
+    document.getElementById('comm-cards').innerHTML   = commD.rows.length ? commD.rows.map(postCard).join('') : empty;
+  } catch(e) { console.error(e); }
+});
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+</script>
+</body>
+</html>

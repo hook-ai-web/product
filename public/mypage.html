@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>마이페이지 — 2막이음</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="icon" type="image/svg+xml" href="/icons/2mak_ieum_favicon.svg">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .my-section {
+      background: var(--surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .my-section-title {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .profile-row {
+      display: flex;
+      align-items: center;
+      padding: .75rem 0;
+      border-bottom: 1px solid var(--color-border);
+      gap: .75rem;
+    }
+    .profile-row:last-child { border-bottom: none; }
+    .profile-label {
+      width: 90px;
+      flex-shrink: 0;
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+    }
+    .profile-value {
+      flex: 1;
+      font-size: .97rem;
+      color: var(--color-text);
+    }
+    .profile-value input {
+      width: 100%;
+      padding: .4rem .65rem;
+      font-size: .95rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-bg);
+    }
+    .profile-value.readonly { color: var(--color-text-muted); }
+    .edit-btn {
+      background: none;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: .3rem .65rem;
+      font-size: .82rem;
+      cursor: pointer;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+    .edit-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .save-btn {
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: .3rem .75rem;
+      font-size: .82rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .cancel-btn {
+      background: none;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: .3rem .65rem;
+      font-size: .82rem;
+      cursor: pointer;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+    .oauth-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      background: var(--color-bg-subtle);
+      border-radius: 999px;
+      padding: .2rem .7rem;
+      font-size: .8rem;
+      color: var(--color-text-muted);
+    }
+    .btn-row {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    .btn-withdraw {
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
+      font-size: .85rem;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+    .btn-withdraw:hover { color: var(--danger); }
+
+    /* 내가 쓴 글 */
+    .my-post-row {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .6rem 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: .9rem;
+    }
+    .my-post-row:last-child { border-bottom: none; }
+    .my-post-board {
+      flex-shrink: 0;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      background: var(--color-bg-subtle);
+      border-radius: 4px;
+      padding: .15rem .45rem;
+      white-space: nowrap;
+    }
+    .my-post-title {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .my-post-title a { color: var(--color-text); text-decoration: none; }
+    .my-post-title a:hover { color: var(--color-primary); }
+    .my-post-date {
+      flex-shrink: 0;
+      font-size: .78rem;
+      color: var(--color-text-muted);
+    }
+  </style>
+</head>
+<body>
+<div id="header-wrap"></div>
+<main class="container" style="max-width:600px;padding-top:2rem;padding-bottom:4rem">
+
+  <h2 style="margin-bottom:1.5rem">👤 마이페이지</h2>
+
+  <!-- 계정 설정 -->
+  <div class="my-section">
+    <div class="my-section-title">계정 설정</div>
+
+    <!-- 닉네임 -->
+    <div class="profile-row" id="row-nickname">
+      <span class="profile-label">닉네임</span>
+      <span class="profile-value" id="val-nickname">—</span>
+      <button class="edit-btn" onclick="startEdit('nickname')">수정</button>
+    </div>
+
+    <!-- 이메일 -->
+    <div class="profile-row">
+      <span class="profile-label">이메일</span>
+      <span class="profile-value readonly" id="val-email">—</span>
+      <span id="oauth-badge"></span>
+    </div>
+
+    <!-- 휴대폰번호 -->
+    <div class="profile-row" id="row-phone">
+      <span class="profile-label">휴대폰번호</span>
+      <span class="profile-value" id="val-phone">—</span>
+      <button class="edit-btn" onclick="startEdit('phone')">수정</button>
+    </div>
+  </div>
+
+  <!-- 내가 쓴 글 -->
+  <div class="my-section">
+    <div class="my-section-title">내가 쓴 글</div>
+    <div id="my-posts-list">
+      <p style="color:var(--color-text-muted);font-size:.93rem;padding:.25rem 0">불러오는 중...</p>
+    </div>
+    <div id="my-posts-more" style="display:none;text-align:center;margin-top:.75rem">
+      <button class="btn btn-outline" style="font-size:.88rem;padding:.4rem 1.2rem" onclick="loadMorePosts()">더 보기</button>
+    </div>
+  </div>
+
+  <!-- 계정 관리 -->
+  <div class="my-section">
+    <div class="my-section-title">계정 관리</div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="logout()">로그아웃</button>
+      <button class="btn-withdraw" onclick="location.href='/withdraw.html'">회원 탈퇴</button>
+    </div>
+  </div>
+
+</main>
+<div id="footer-wrap"></div>
+
+<script src="/js/common.js"></script>
+<script>
+let profile = {};
+let postsPage = 1;
+let postsTotal = 0;
+const POSTS_LIMIT = 10;
+
+const BOARD_LABELS = {
+  health:'건강', finance:'재무·연금', travel:'여행·여가', housing:'주거생활', family:'가족관계',
+  digital:'디지털생활', law:'법률·소비자', startup:'창업', recruit:'채용정보', guide:'일자리 가이드',
+  gov:'정부지원금', welfare:'복지혜택', care:'부모님요양',
+  counsel:'고민상담소', market:'따뜻한 장터', local:'우리 동네 소식',
+  talent:'생활의 지혜', daily:'일상 공유', second:'인생2막준비',
+  ch_walk:'발도장 챌린지', ch_morning:'아침 한잔 챌린지', ch_health:'건강 약속 챌린지',
+  challenge:'건강 챌린지',
+};
+
+async function loadProfile() {
+  const { loggedIn } = await api('/api/auth/me');
+  if (!loggedIn) { location.href = '/login.html'; return; }
+
+  profile = await api('/api/auth/profile');
+
+  document.getElementById('val-nickname').textContent = profile.nickname || '—';
+  document.getElementById('val-email').textContent    = profile.email || '—';
+  document.getElementById('val-phone').textContent    = profile.phone || '미등록';
+
+  // 소셜 로그인 배지
+  if (profile.oauth_provider) {
+    const labels = { kakao: '카카오', naver: '네이버', google: '구글' };
+    document.getElementById('oauth-badge').innerHTML =
+      `<span class="oauth-badge">${labels[profile.oauth_provider] || profile.oauth_provider} 연동</span>`;
+  }
+}
+
+// 인라인 수정
+function startEdit(field) {
+  const row    = document.getElementById(`row-${field}`);
+  const valEl  = document.getElementById(`val-${field}`);
+  const curVal = field === 'phone' ? (profile.phone || '') : profile[field] || '';
+
+  const placeholder = field === 'nickname' ? '닉네임 (2~20자)' : '010-0000-0000';
+  const inputType   = field === 'phone' ? 'tel' : 'text';
+
+  valEl.innerHTML = `<input type="${inputType}" id="input-${field}" value="${curVal}" placeholder="${placeholder}" maxlength="${field === 'nickname' ? 20 : 20}">`;
+
+  // 버튼 교체
+  const editBtn = row.querySelector('.edit-btn');
+  editBtn.outerHTML = `
+    <button class="save-btn" onclick="saveField('${field}')">저장</button>
+    <button class="cancel-btn" onclick="cancelEdit('${field}')">취소</button>`;
+
+  document.getElementById(`input-${field}`).focus();
+}
+
+function cancelEdit(field) {
+  loadProfile();
+}
+
+async function saveField(field) {
+  const val = document.getElementById(`input-${field}`)?.value?.trim() ?? '';
+  const body = {};
+  body[field] = val;
+
+  try {
+    await api('/api/auth/profile', { method: 'PUT', body });
+    if (field === 'nickname') profile.nickname = val;
+    if (field === 'phone')    profile.phone    = val;
+    showToast('저장되었습니다.');
+    loadProfile();
+  } catch(err) {
+    showToast(err.message, 'error');
+  }
+}
+
+async function logout() {
+  await api('/api/auth/logout', { method: 'POST' });
+  location.href = '/index.html';
+}
+
+async function loadMyPosts(reset = false) {
+  if (reset) { postsPage = 1; postsTotal = 0; }
+  const data = await api(`/api/auth/my-posts?page=${postsPage}&limit=${POSTS_LIMIT}`);
+  postsTotal = data.total;
+
+  const container = document.getElementById('my-posts-list');
+  if (reset) container.innerHTML = '';
+
+  if (data.rows.length === 0 && reset) {
+    container.innerHTML = '<p style="color:var(--color-text-muted);font-size:.93rem;padding:.25rem 0">작성한 글이 없습니다.</p>';
+    document.getElementById('my-posts-more').style.display = 'none';
+    return;
+  }
+
+  data.rows.forEach(r => {
+    const label = BOARD_LABELS[r.board] || r.board;
+    const date  = r.created_at?.slice(0, 10) || '';
+    const title = r.is_anonymous ? `${r.title} <span style="color:var(--color-text-muted);font-size:.8rem">(익명)</span>` : r.title;
+    container.insertAdjacentHTML('beforeend', `
+      <div class="my-post-row">
+        <span class="my-post-board">${label}</span>
+        <span class="my-post-title"><a href="/post.html?id=${r.id}">${title}</a></span>
+        <span class="my-post-date">${date}</span>
+      </div>`);
+  });
+
+  const shown = postsPage * POSTS_LIMIT;
+  document.getElementById('my-posts-more').style.display = shown < postsTotal ? 'block' : 'none';
+}
+
+function loadMorePosts() {
+  postsPage++;
+  loadMyPosts(false);
+}
+
+loadProfile();
+loadMyPosts(true);
+</script>
+</body>
+</html>

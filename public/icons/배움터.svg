@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 책 왼쪽 -->
+  <rect x="14" y="28" width="44" height="60" rx="6" fill="#1D9E75"/>
+  <rect x="18" y="34" width="36" height="48" rx="3" fill="#E1F5EE"/>
+  <!-- 책 오른쪽 -->
+  <rect x="70" y="28" width="44" height="60" rx="6" fill="#0F6E56"/>
+  <rect x="74" y="34" width="36" height="48" rx="3" fill="#E1F5EE"/>
+  <!-- 척추 -->
+  <rect x="56" y="24" width="16" height="68" rx="4" fill="#5DCAA5"/>
+  <!-- 별빛/반짝임 -->
+  <path fill="#FFB938" d="M100 18l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>
+  <path fill="#FAC775" d="M20 18l1.5 3.5 3.5 1.5-3.5 1.5L20 28l-1.5-3.5L15 23l3.5-1.5z"/>
+  <!-- 연필 -->
+  <rect x="52" y="94" width="24" height="8" rx="2" fill="#FFB938" transform="rotate(-40 64 98)"/>
+  <path fill="#E24B4A" d="M72 103l5-6-3-2z" transform="rotate(-40 64 98)"/>
+</svg>

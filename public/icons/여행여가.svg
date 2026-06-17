@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 구름 -->
+  <circle cx="48" cy="50" r="18" fill="#B5D4F4"/>
+  <circle cx="68" cy="44" r="22" fill="#B5D4F4"/>
+  <circle cx="88" cy="52" r="16" fill="#B5D4F4"/>
+  <rect x="32" y="52" width="72" height="18" rx="0" fill="#B5D4F4"/>
+  <!-- 비행기 -->
+  <path fill="#185FA5" d="M20 68l72-36 4 8-30 16 6 22-10 4-8-18-20 10z"/>
+  <!-- 태양 -->
+  <circle cx="96" cy="28" r="12" fill="#FFB938"/>
+</svg>

@@ -1,0 +1,24 @@
+# 환경변수 (API 키·비밀번호 포함)
+.env
+
+# 데이터베이스 파일 (실사용 데이터)
+db/*.db
+db/*.db-shm
+db/*.db-wal
+
+# 사용자 업로드 파일
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Node 모듈
+node_modules/
+
+# macOS
+.DS_Store
+
+# Claude Code 내부 파일
+.claude/
+
+# 에디터
+.vscode/
+*.swp

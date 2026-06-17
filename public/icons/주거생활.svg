@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 지붕 -->
+  <path fill="#D85A30" d="M64 16L14 58h16v48h68V58h16z"/>
+  <!-- 벽 -->
+  <rect x="30" y="58" width="68" height="48" rx="0" fill="#F5C4B3"/>
+  <!-- 문 -->
+  <rect x="52" y="76" width="24" height="30" rx="4" fill="#D85A30"/>
+  <circle cx="71" cy="91" r="2.5" fill="#FAECE7"/>
+  <!-- 창문 -->
+  <rect x="36" y="66" width="18" height="16" rx="3" fill="#fff"/>
+  <rect x="74" y="66" width="18" height="16" rx="3" fill="#fff"/>
+  <line x1="45" y1="66" x2="45" y2="82" stroke="#F5C4B3" stroke-width="2"/>
+  <line x1="36" y1="74" x2="54" y2="74" stroke="#F5C4B3" stroke-width="2"/>
+</svg>

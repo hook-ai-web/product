@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 화분/땅 -->
+  <path fill="#BA7517" d="M40 98h48l-6 16H46z"/>
+  <rect x="34" y="90" width="60" height="10" rx="5" fill="#EF9F27"/>
+  <!-- 줄기 -->
+  <rect x="61" y="46" width="6" height="46" rx="3" fill="#1D9E75"/>
+  <!-- 왼쪽 잎 -->
+  <path fill="#5DCAA5" d="M64 72 Q44 62 40 44 Q56 42 64 60z"/>
+  <!-- 오른쪽 잎 -->
+  <path fill="#1D9E75" d="M64 58 Q84 46 90 28 Q74 28 64 46z"/>
+  <!-- 꽃/별 -->
+  <circle cx="64" cy="30" r="14" fill="#FFB938"/>
+  <path fill="#EF9F27" d="M64 16l3 8h8l-6.5 5 2.5 8L64 32l-7 5 2.5-8L53 24h8z"/>
+  <circle cx="64" cy="30" r="6" fill="#FAEEDA"/>
+</svg>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>공지 — 2막이음</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="icon" type="image/svg+xml" href="/icons/2mak_ieum_favicon.svg">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .notice-badge { flex-shrink:0; font-size:.78rem; font-weight:700; padding:.2rem .55rem; border-radius:4px; }
+    .badge-notice { background:#e0e7ff; color:#3730a3; }
+    .badge-event  { background:#fef3c7; color:#92400e; }
+    .notice-img   { width:100%; border-radius:12px; margin:1.25rem 0; display:block; }
+    .notice-body  { font-size:1.02rem; line-height:1.95; color:var(--color-text-secondary); white-space:pre-wrap; margin-top:1rem; }
+
+    /* 공유 버튼 */
+    .share-row { display:flex; gap:.65rem; flex-wrap:wrap; margin-top:2rem; }
+    .share-btn {
+      display: inline-flex; align-items:center; gap:.45rem;
+      padding: .55rem 1rem; border-radius: 10px;
+      font-size: .88rem; font-weight: 600; cursor: pointer; border: none;
+      transition: opacity .15s;
+    }
+    .share-btn:hover { opacity: .85; }
+    .share-btn.kakao { background: #FEE500; color: #3A1D1D; }
+    .share-btn.band  { background: #1DBD26; color: #fff; }
+    .share-btn.copy  { background: var(--color-bg-2); color: var(--color-text-primary); border: 1.5px solid var(--color-border); }
+    .share-btn i { font-size: 18px; }
+  </style>
+</head>
+<body>
+<div id="header-wrap"></div>
+<main class="container" style="max-width:680px;padding-top:2rem;padding-bottom:4rem">
+
+  <div id="notice-wrap">
+    <p style="text-align:center;padding:3rem;color:#888">불러오는 중...</p>
+  </div>
+
+</main>
+<div id="footer-wrap"></div>
+
+<script src="/js/common.js"></script>
+<script>
+const noticeId = new URLSearchParams(location.search).get('id');
+
+async function load() {
+  if (!noticeId) { location.href = '/community.html'; return; }
+  try {
+    const { notice: r } = await api(`/api/challenges/notices/${noticeId}`);
+    document.title = r.title + ' — 2막이음';
+
+    const badgeCls = r.type === 'event' ? 'badge-event' : 'badge-notice';
+    const badgeTxt = r.type === 'event' ? '이벤트' : '공지';
+
+    document.getElementById('notice-wrap').innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <a href="/notices.html" style="font-size:.88rem;color:var(--color-text-muted)">← 공지&이벤트</a>
+        <span class="notice-badge ${badgeCls}">${badgeTxt}</span>
+      </div>
+
+      <h1 style="font-size:1.35rem;font-weight:700;line-height:1.45;margin:0 0 .5rem">${r.title}</h1>
+      <p style="color:var(--color-text-muted);font-size:.85rem;margin:0 0 .25rem">${r.created_at?.slice(0,10) || ''}</p>
+
+      ${r.image_path ? `<img src="${r.image_path}" class="notice-img" alt="">` : ''}
+      ${r.content?.trim() ? `<div class="notice-body">${r.content.trim()}</div>` : ''}
+      ${r.link ? `<a href="${r.link}" target="_blank" rel="noopener" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:1.25rem"><i class="ti ti-external-link"></i> 자세히 보기</a>` : ''}
+
+      <hr style="border:none;border-top:1px solid var(--color-border);margin:2rem 0">
+
+      <div class="share-row">
+        <button class="share-btn kakao" onclick="shareKakao()">
+          <i class="ti ti-brand-kakao"></i> 카카오톡
+        </button>
+        <button class="share-btn band" onclick="shareBand()">
+          <i class="ti ti-antenna-bars-5"></i> 네이버밴드
+        </button>
+        <button class="share-btn copy" onclick="copyLink()">
+          <i class="ti ti-link"></i> 링크 복사
+        </button>
+      </div>`;
+  } catch(e) {
+    document.getElementById('notice-wrap').innerHTML =
+      '<p style="text-align:center;padding:3rem;color:#888">공지를 찾을 수 없습니다.</p>';
+  }
+}
+
+function shareKakao() {
+  const url  = location.href;
+  const text = document.title + '\n' + url;
+  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    const app = document.createElement('a');
+    app.href = 'kakaotalk://msg/send?msg=' + encodeURIComponent(text);
+    app.click();
+    setTimeout(() => {
+      if (navigator.share) navigator.share({ title: document.title, url });
+    }, 800);
+  } else if (navigator.share) {
+    navigator.share({ title: document.title, url });
+  } else {
+    navigator.clipboard?.writeText(url);
+    showToast('링크 복사 완료! 카카오톡에 붙여넣기 하세요.');
+  }
+}
+
+function shareBand() {
+  const text = document.title + '\n' + location.href;
+  window.open('https://band.us/plugin/share?body=' + encodeURIComponent(text) + '&route=share',
+    '_blank', 'width=400,height=520,scrollbars=yes');
+}
+
+function copyLink() {
+  navigator.clipboard?.writeText(location.href) ||
+    (() => { const t = document.createElement('textarea'); t.value = location.href; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); })();
+  showToast('링크를 복사했습니다.');
+}
+
+document.addEventListener('DOMContentLoaded', load);
+</script>
+</body>
+</html>

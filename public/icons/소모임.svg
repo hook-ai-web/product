@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 왼쪽 사람 -->
+  <circle cx="33" cy="57" r="12" fill="#B838FF"/>
+  <path fill="#B838FF" d="M12 104v-3c0-11.6 9.4-21 21-21s21 9.4 21 21v3z"/>
+  <!-- 오른쪽 사람 -->
+  <circle cx="95" cy="57" r="12" fill="#7026E0"/>
+  <path fill="#7026E0" d="M74 104v-3c0-11.6 9.4-21 21-21s21 9.4 21 21v3z"/>
+  <!-- 가운데 사람 -->
+  <circle cx="64" cy="44" r="15" fill="#8B2BF2"/>
+  <path fill="#8B2BF2" d="M39 106v-4c0-13.8 11.2-25 25-25s25 11.2 25 25v4z"/>
+</svg>

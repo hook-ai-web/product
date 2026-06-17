@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 문서 배경 -->
+  <rect x="20" y="14" width="72" height="90" rx="8" fill="#1D9E75"/>
+  <rect x="26" y="22" width="60" height="74" rx="5" fill="#E1F5EE"/>
+  <!-- 텍스트 줄 -->
+  <rect x="34" y="32" width="44" height="7" rx="3.5" fill="#1D9E75"/>
+  <rect x="34" y="46" width="36" height="5" rx="2.5" fill="#9FE1CB"/>
+  <rect x="34" y="57" width="40" height="5" rx="2.5" fill="#9FE1CB"/>
+  <rect x="34" y="68" width="30" height="5" rx="2.5" fill="#9FE1CB"/>
+  <!-- 느낌표 뱃지 -->
+  <circle cx="88" cy="88" r="18" fill="#FFB938"/>
+  <rect x="85" y="76" width="6" height="12" rx="3" fill="#fff"/>
+  <circle cx="88" cy="93" r="3.5" fill="#fff"/>
+</svg>

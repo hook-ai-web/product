@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>회원가입 — 2막이음</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="icon" type="image/svg+xml" href="/icons/2mak_ieum_favicon.svg">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .form-box { max-width: 480px; }
+
+    /* 소셜 버튼 */
+    .social-btn {
+      display: flex; align-items: center; justify-content: center; gap: .6rem;
+      padding: .75rem 1rem; border-radius: var(--radius-md);
+      font-size: var(--text-sm); font-weight: 600;
+      text-decoration: none; cursor: pointer; transition: opacity .15s;
+    }
+    .social-btn:hover { opacity: .88; text-decoration: none; }
+    .kakao-btn  { background: #FEE500; color: #3C1E1E; }
+    .naver-btn  { background: #03C75A; color: #fff; }
+    .google-btn { background: #fff; color: #3c4043; border: 1.5px solid #dadce0; }
+
+    /* 이메일 입력 행 */
+    .email-row { display: flex; gap: .4rem; align-items: center; }
+    .email-row input[type="text"] { flex: 1; min-width: 0; }
+    .email-at { font-size: 1rem; color: var(--color-text-muted); flex-shrink: 0; }
+    .email-row select { width: 140px; flex-shrink: 0; }
+
+    /* 인증 코드 행 */
+    .verify-row { display: flex; gap: .5rem; margin-top: .5rem; }
+    .verify-row input { flex: 1; }
+    .verify-row button { white-space: nowrap; flex-shrink: 0; }
+
+    /* 인증 상태 */
+    .verify-ok { color: #16a34a; font-size: .88rem; font-weight: 600; margin-top: .35rem; display: none; }
+    .field-hint { font-size: .83rem; color: var(--color-text-muted); margin-top: .3rem; }
+
+    /* 약관동의 박스 */
+    .terms-box {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: .8rem 1rem;
+      display: flex; flex-direction: column; gap: .55rem;
+    }
+    .terms-item {
+      display: flex; align-items: center; gap: .55rem;
+      font-size: .93rem; cursor: pointer;
+    }
+    .terms-item input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+    .terms-item .badge-req { color: var(--color-primary); font-size: .78rem; font-weight: 600; }
+    .terms-item .badge-opt { color: var(--color-text-muted); font-size: .78rem; }
+    .terms-item a { color: var(--color-primary); text-decoration: none; margin-left: auto; font-size: .85rem; }
+    .terms-all { font-weight: 700; font-size: .98rem; padding-bottom: .55rem; border-bottom: 1px solid var(--color-border); }
+    .terms-divider { border: none; border-top: 1px solid var(--color-border); margin: 0; }
+  </style>
+</head>
+<body>
+<main class="container">
+  <div class="form-box">
+    <h2>📝 회원가입</h2>
+
+    <!-- 소셜 가입 -->
+    <div style="display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.4rem">
+      <a href="/auth/kakao" class="social-btn kakao-btn">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2C5.582 2 2 4.896 2 8.45c0 2.235 1.488 4.195 3.732 5.328L4.8 17.1c-.08.27.2.49.44.34l4.06-2.69c.23.02.46.03.7.03 4.418 0 8-2.896 8-6.45S14.418 2 10 2z" fill="#3C1E1E"/></svg>
+        카카오로 시작하기
+      </a>
+      <a href="/auth/naver" class="social-btn naver-btn">
+        <span style="font-weight:900;font-size:15px;line-height:1;color:#fff">N</span>
+        네이버로 시작하기
+      </a>
+      <a href="/auth/google" class="social-btn google-btn">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.7 2.2 30.2 0 24 0 14.7 0 6.7 5.4 2.8 13.3l7.8 6.1C12.5 13 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17z"/><path fill="#FBBC05" d="M10.6 28.6A14.6 14.6 0 0 1 9.5 24c0-1.6.3-3.1.7-4.6L2.4 13.3A23.9 23.9 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l8-6.1z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2.1 1.4-4.7 2.2-7.7 2.2-6.2 0-11.5-4.2-13.4-9.9l-7.8 6C6.6 42.6 14.7 48 24 48z"/></svg>
+        Google로 시작하기
+      </a>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.4rem">
+      <hr style="flex:1;border-color:var(--color-border)">
+      <span style="font-size:var(--text-xs);color:var(--color-text-muted)">또는 이메일로 가입</span>
+      <hr style="flex:1;border-color:var(--color-border)">
+    </div>
+
+    <form id="reg-form" novalidate>
+
+      <!-- 이메일 -->
+      <div class="form-group">
+        <label>이메일 *</label>
+        <div class="email-row">
+          <input type="text" id="email-local" placeholder="이메일" autocomplete="off">
+          <span class="email-at">@</span>
+          <select id="email-domain" onchange="onDomainChange()">
+            <option value="">선택해주세요</option>
+            <option value="naver.com">naver.com</option>
+            <option value="gmail.com">gmail.com</option>
+            <option value="daum.net">daum.net</option>
+            <option value="kakao.com">kakao.com</option>
+            <option value="nate.com">nate.com</option>
+            <option value="hanmail.net">hanmail.net</option>
+            <option value="direct">직접입력</option>
+          </select>
+        </div>
+        <input type="text" id="email-domain-direct" placeholder="도메인 직접 입력" style="margin-top:.4rem;display:none">
+        <button type="button" id="btn-send-code" class="btn btn-outline" style="width:100%;margin-top:.5rem" onclick="sendCode()">
+          이메일 인증하기
+        </button>
+        <div id="verify-row" class="verify-row" style="display:none">
+          <input type="text" id="verify-code" placeholder="인증 코드 6자리" maxlength="6" inputmode="numeric">
+          <button type="button" class="btn btn-primary" onclick="checkCode()">확인</button>
+        </div>
+        <p id="verify-ok" class="verify-ok">✓ 이메일 인증이 완료되었습니다.</p>
+      </div>
+
+      <!-- 비밀번호 -->
+      <div class="form-group">
+        <label for="password">비밀번호 *</label>
+        <p class="field-hint" style="margin-top:0;margin-bottom:.4rem">영문, 숫자를 포함한 8자 이상의 비밀번호를 입력해주세요.</p>
+        <input type="password" id="password" placeholder="비밀번호" autocomplete="new-password">
+      </div>
+
+      <!-- 비밀번호 확인 -->
+      <div class="form-group">
+        <label for="password2">비밀번호 확인 *</label>
+        <input type="password" id="password2" placeholder="비밀번호 확인" autocomplete="new-password">
+      </div>
+
+      <!-- 닉네임 -->
+      <div class="form-group">
+        <label for="nickname">닉네임 *</label>
+        <p class="field-hint" style="margin-top:0;margin-bottom:.4rem">다른 유저와 겹치지 않도록 입력해주세요. (2~20자)</p>
+        <input type="text" id="nickname" placeholder="별명 (2~20자)" maxlength="20">
+      </div>
+
+      <!-- 연락처 -->
+      <div class="form-group">
+        <label for="phone">연락처</label>
+        <input type="tel" id="phone" placeholder="010-0000-0000" autocomplete="tel">
+      </div>
+
+      <!-- 약관동의 -->
+      <div class="form-group">
+        <label>약관동의</label>
+        <div class="terms-box">
+          <label class="terms-item terms-all">
+            <input type="checkbox" id="terms-all" onchange="toggleAll(this)">
+            <span>전체동의</span>
+            <span style="font-size:.78rem;font-weight:400;color:var(--color-text-muted);margin-left:.25rem">선택항목에 대한 동의 포함</span>
+          </label>
+          <hr class="terms-divider">
+          <label class="terms-item">
+            <input type="checkbox" class="terms-req" name="terms14" onchange="syncAll()">
+            <span>만 14세 이상입니다</span>
+            <span class="badge-req">(필수)</span>
+          </label>
+          <label class="terms-item">
+            <input type="checkbox" class="terms-req" name="termsUse" onchange="syncAll()">
+            <span>이용약관</span>
+            <span class="badge-req">(필수)</span>
+            <a href="#" onclick="showTerms('use');return false">›</a>
+          </label>
+          <label class="terms-item">
+            <input type="checkbox" class="terms-opt" name="termsMarketing" onchange="syncAll()">
+            <span>개인정보 마케팅 활용 동의</span>
+            <span class="badge-opt">(선택)</span>
+            <a href="#" onclick="showTerms('marketing');return false">›</a>
+          </label>
+        </div>
+      </div>
+
+      <div id="error-msg" style="color:var(--danger);font-size:.93rem;margin-bottom:.8rem;display:none"></div>
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:.25rem">가입하기</button>
+    </form>
+
+    <p style="text-align:center;margin-top:1.2rem;font-size:.95rem">
+      이미 계정이 있으신가요? <a href="/login.html">로그인</a>
+    </p>
+  </div>
+</main>
+
+<script src="/js/common.js"></script>
+<script>
+let emailVerified = false;
+let verifiedEmail = '';
+
+function getEmail() {
+  const local = document.getElementById('email-local').value.trim();
+  const domainSel = document.getElementById('email-domain').value;
+  const domainDirect = document.getElementById('email-domain-direct').value.trim();
+  const domain = domainSel === 'direct' ? domainDirect : domainSel;
+  return local && domain ? `${local}@${domain}` : '';
+}
+
+function onDomainChange() {
+  const direct = document.getElementById('email-domain').value === 'direct';
+  document.getElementById('email-domain-direct').style.display = direct ? 'block' : 'none';
+  // 이메일이 바뀌면 인증 초기화
+  resetVerify();
+}
+
+function resetVerify() {
+  emailVerified = false;
+  verifiedEmail = '';
+  document.getElementById('verify-row').style.display = 'none';
+  document.getElementById('verify-ok').style.display = 'none';
+  document.getElementById('btn-send-code').textContent = '이메일 인증하기';
+  document.getElementById('btn-send-code').disabled = false;
+}
+
+// 이메일 로컬 부분 변경시 인증 초기화
+document.getElementById('email-local').addEventListener('input', resetVerify);
+document.getElementById('email-domain-direct').addEventListener('input', resetVerify);
+
+async function sendCode() {
+  const email = getEmail();
+  if (!email) { showToast('이메일을 입력해주세요.'); return; }
+
+  const btn = document.getElementById('btn-send-code');
+  btn.disabled = true;
+  btn.textContent = '발송 중...';
+  try {
+    await api('/api/auth/send-verification', { method: 'POST', body: { email } });
+    document.getElementById('verify-row').style.display = 'flex';
+    document.getElementById('verify-ok').style.display = 'none';
+    btn.textContent = '재발송';
+    showToast('인증 코드를 발송했습니다. 이메일을 확인해주세요.');
+    setTimeout(() => { btn.disabled = false; }, 30000); // 30초 후 재발송 가능
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = '이메일 인증하기';
+    showToast(err.message, 'error');
+  }
+}
+
+async function checkCode() {
+  const email = getEmail();
+  const code = document.getElementById('verify-code').value.trim();
+  if (!code) { showToast('인증 코드를 입력해주세요.'); return; }
+  try {
+    await api('/api/auth/check-verification', { method: 'POST', body: { email, code } });
+    emailVerified = true;
+    verifiedEmail = email;
+    document.getElementById('verify-row').style.display = 'none';
+    document.getElementById('verify-ok').style.display = 'block';
+    document.getElementById('btn-send-code').style.display = 'none';
+  } catch(err) {
+    showToast(err.message, 'error');
+  }
+}
+
+// 약관 전체동의
+function toggleAll(el) {
+  document.querySelectorAll('.terms-req, .terms-opt').forEach(cb => cb.checked = el.checked);
+}
+function syncAll() {
+  const all = [...document.querySelectorAll('.terms-req, .terms-opt')];
+  document.getElementById('terms-all').checked = all.every(cb => cb.checked);
+}
+
+function showTerms(type) {
+  const texts = {
+    use: '이용약관\n\n2막이음 서비스 이용약관입니다.\n(추후 실제 약관으로 교체 예정)',
+    marketing: '개인정보 마케팅 활용 동의\n\n수집한 개인정보를 마케팅 목적으로 활용하는 것에 동의합니다.\n(추후 실제 약관으로 교체 예정)',
+  };
+  alert(texts[type]);
+}
+
+// 회원가입 제출
+document.getElementById('reg-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const errEl = document.getElementById('error-msg');
+  errEl.style.display = 'none';
+
+  const email = getEmail();
+  const password = document.getElementById('password').value;
+  const password2 = document.getElementById('password2').value;
+  const nickname = document.getElementById('nickname').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+
+  // 클라이언트 유효성 검사
+  if (!email) { showErr('이메일을 입력해주세요.'); return; }
+  if (!emailVerified || verifiedEmail !== email) { showErr('이메일 인증을 완료해주세요.'); return; }
+  if (password.length < 8 || !/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+    showErr('비밀번호는 영문, 숫자를 포함한 8자 이상이어야 합니다.'); return;
+  }
+  if (password !== password2) { showErr('비밀번호가 일치하지 않습니다.'); return; }
+  if (nickname.length < 2) { showErr('닉네임은 2자 이상 입력해주세요.'); return; }
+
+  // 필수 약관 체크
+  const req14 = document.querySelector('[name="terms14"]').checked;
+  const reqUse = document.querySelector('[name="termsUse"]').checked;
+  if (!req14 || !reqUse) { showErr('필수 약관에 동의해주세요.'); return; }
+
+  try {
+    await api('/api/auth/register', { method: 'POST', body: { email, password, nickname, phone } });
+    showToast('가입 완료! 환영합니다 🎉');
+    setTimeout(() => location.href = '/index.html', 1200);
+  } catch(err) {
+    showErr(err.message);
+  }
+
+  function showErr(msg) {
+    errEl.textContent = msg;
+    errEl.style.display = 'block';
+  }
+});
+</script>
+</body>
+</html>

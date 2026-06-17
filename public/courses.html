@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>배움터 — 2막이음</title>
+  <!-- Fonts + Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="icon" type="image/svg+xml" href="/icons/2mak_ieum_favicon.svg">
+  <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+<main class="container">
+  <h2 style="margin-bottom:1rem;display:flex;align-items:center;gap:8px"><img src="/icons/배움터.svg" style="width:32px;height:32px"> 배움터</h2>
+
+  <div class="board-tabs" id="type-tabs">
+    <a href="#" data-type="" class="active">전체</a>
+    <a href="#" data-type="online">온라인강의</a>
+    <a href="#" data-type="cert">자격증</a>
+    <a href="#" data-type="hobby">취미강좌</a>
+  </div>
+
+  <div id="course-grid" class="course-grid">
+    <p style="grid-column:1/-1;text-align:center;padding:3rem;color:#888">불러오는 중...</p>
+  </div>
+</main>
+
+<script src="/js/common.js"></script>
+<script>
+const TYPE_ICONS = { online:'💻', cert:'📜', hobby:'🎨', '':'🌟' };
+const TYPE_LABELS = { online:'온라인강의', cert:'자격증', hobby:'취미강좌' };
+let currentType = new URLSearchParams(location.search).get('type') || '';
+
+async function loadCourses(type = '') {
+  currentType = type;
+  const grid = document.getElementById('course-grid');
+  grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:2rem;color:#888">불러오는 중...</p>';
+
+  const url = type ? `/api/courses?type=${type}` : '/api/courses';
+  const courses = await api(url);
+
+  if (!courses.length) {
+    grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:3rem;color:#888">강좌가 없습니다.</p>';
+    return;
+  }
+
+  grid.innerHTML = courses.map(c => `
+    <a href="${c.link || '#'}" class="course-card" target="_blank" rel="noopener" style="text-decoration:none">
+      <div class="thumb">${TYPE_ICONS[c.type] || '📖'}</div>
+      <div class="card-body">
+        <div class="card-title">${c.title}</div>
+        <div class="card-sub">${c.description}</div>
+        <div class="card-provider">제공: ${c.provider}</div>
+        <div style="margin-top:.6rem">
+          <span style="background:var(--bg);border:1px solid var(--border);border-radius:99px;padding:.2rem .7rem;font-size:.82rem;color:var(--text-sub)">${TYPE_LABELS[c.type]||c.type}</span>
+        </div>
+      </div>
+    </a>`).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 탭 초기 active 설정
+  document.querySelectorAll('#type-tabs a').forEach(a => {
+    a.classList.toggle('active', a.dataset.type === currentType);
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('#type-tabs a').forEach(x => x.classList.remove('active'));
+      a.classList.add('active');
+      loadCourses(a.dataset.type);
+    });
+  });
+  loadCourses(currentType);
+});
+</script>
+</body>
+</html>

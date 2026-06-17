@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 사람 실루엣 -->
+  <circle cx="56" cy="46" r="18" fill="#AFA9EC"/>
+  <path fill="#AFA9EC" d="M22 106v-6c0-18.8 15.2-34 34-34s34 15.2 34 34v6z"/>
+  <!-- 돋보기 -->
+  <circle cx="88" cy="40" r="20" fill="none" stroke="#534AB7" stroke-width="9"/>
+  <line x1="103" y1="55" x2="116" y2="68" stroke="#534AB7" stroke-width="9" stroke-linecap="round"/>
+  <!-- 별 -->
+  <path fill="#FFB938" d="M88 30l2.2 5.3 5.8.4-4.4 3.7 1.4 5.6L88 42l-5 3-1.4-5.6-4.4-3.7 5.8-.4z"/>
+</svg>

@@ -103,7 +103,7 @@ function buildFooter() {
           </button>
           <div class="biz-info-body">
             <p class="biz-text">
-              세컨드링크 &nbsp;|&nbsp; 대표: 전현민<br>
+              세컨드링크 &nbsp;|&nbsp; 대표: 전현민 &nbsp;|&nbsp; 070-4202-0738<br>
               경기도 용인시 기흥구 동백중앙로 203, (미주타운) 7층 703-11호 &nbsp;|&nbsp; <a href="mailto:s2condlink@gmail.com">s2condlink@gmail.com</a><br>
               사업자등록번호: [000-00-00000] &nbsp;<a href="#" class="biz-link">사업자정보확인</a><br>
               통신판매업신고번호: 제[0000-서울00-0000]호

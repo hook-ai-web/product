@@ -134,7 +134,7 @@ async function loadPost() {
 
   const { loggedIn, user } = await api('/api/auth/me');
   const canEdit = loggedIn && (user.id === post.user_id || user.role === 'admin');
-  const canBan  = loggedIn && user.role === 'admin' && !post.is_anonymous && post.user_id !== user.id;
+  const canBan  = loggedIn && user.role === 'admin' && post.user_id !== user.id;
   const isMag = MAG_SECTIONS.includes(post.section);
   const isNotice = post.section === 'notice';
   const backHref = isNotice ? '/notices.html' : `/board.html?section=${post.section}&board=all`;
@@ -183,7 +183,7 @@ async function loadPost() {
         ${canEdit ? `<span style="float:right">
           <a href="/write.html?id=${post.id}" class="btn btn-outline btn-sm">수정</a>
           <button class="btn btn-danger btn-sm" onclick="deletePost()">삭제</button>
-          ${canBan ? `<button class="btn btn-sm" style="background:#fff0f0;color:#b71c1c;border:1px solid #ffcdd2;margin-left:.25rem" onclick="banUser(${post.user_id},'${post.author.replace(/'/g,'')}')">회원 제재</button>` : ''}
+          ${canBan ? `<button class="btn btn-sm" style="background:#fff0f0;color:#b71c1c;border:1px solid #ffcdd2;margin-left:.25rem" onclick="banUser(${post.user_id},'${post.is_anonymous ? '익명 작성자' : post.author.replace(/'/g,'')}')">회원 제재</button>` : ''}
         </span>` : ''}
       </div>
       <div class="post-body">${post.content.replace(/\n/g,'<br>')}</div>
